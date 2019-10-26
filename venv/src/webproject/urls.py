@@ -18,12 +18,12 @@ from django.urls import path
 from django.conf import settings
 from django.conf.urls.static import static
 
-from pages.views import home_view, login_view
-from users.views import user_create_view
+from pages.views import home_view
+from users.views import user_create_view, user_login_view
 
 urlpatterns = [
     path('', home_view, name='home'),
-    path('login/', login_view, name='login'),
+    path('login/', user_login_view, name='login'),
     path('register/', user_create_view),
     path('admin/', admin.site.urls),
 ] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
