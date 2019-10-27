@@ -1,30 +1,47 @@
 {% extends 'base.html' %}
 {% load static %}
 
-
-
 {% block content_1 %}
     <div class="container">
-            <div class="row justify-content-center">
-                <div class="col-md-9 col-lg-12 col-xl-10">
-                    <div class="card shadow-lg o-hidden border-0 my-5">
-                        <div class="card-body p-0">
-                            <div class="row">
-                                <div class="col-lg-6 d-none d-lg-flex">
-                                    <div class="flex-grow-1 bg-login-image" style="background-image: url('{% static "assets/img/dogs/image3.jpeg"%}')";></div>
-                                </div>
-                                <div class="col-lg-6">
-                                    <div class="p-5">
-                                        <div class="text-center">
-                                            <h4 class="text-dark mb-4">Registro de usuario</h4>
-                                        </div>
-                                        <form action='.' method='POST'> {% csrf_token %}
-                                            {{ form.as_p }}
-                                            <button class="btn btn-primary btn-block text-white btn-user" type="submit">Crear cuenta</button>
-                                        </form>
-                                        <div class="text-center"><a class="small" href="">¿Olvidaste la contraseña?</a></div>
-                                        <div class="text-center"><a class="small" href="/login/">¿Ya tienes una cuenta? ¡Ingresa!</a></div>
+        <div class="row justify-content-center">
+            <div class="col-md-9 col-lg-12 col-xl-10">
+                <div class="card shadow-lg o-hidden border-0 my-5">
+                    <div class="card-body p-0">
+                        <div class="row">
+                            <div class="col-lg-6 d-none d-lg-flex">
+                                <div class="flex-grow-1 bg-login-image" style="background-image: url('{% static "assets/img/dogs/image3.jpeg"%}')";></div>
+                            </div>
+                            <div class="col-lg-6">
+                                <div class="p-5">
+                                    <div class="text-center">
+                                        <h4 class="text-dark mb-4">¡Regístrate!</h4>
                                     </div>
+
+                                    <form action='/register/' class="user" method="post"> {% csrf_token %}
+                                        <div class="form-group row">
+                                            <div class="col-sm-6"><input class="form-control form-control-user" placeholder="Usuario" {{ form.username }} </div>
+                                            <div class="col-sm-6"><input class="form-control form-control-user" placeholder="Correo" {{ form.email }} </div>
+                                        </div>
+                                        <div class="form-group"><input class="form-control form-control-user" placeholder="Nombre" {{ form.first_name }} </div>
+                                        <div class="form-group"><input class="form-control form-control-user" placeholder="Apellido" {{ form.last_name }} </div>
+                                        <div class="form-group row">
+                                            <div class="col-sm-6 mb-3 mb-sm-0"><input class="form-control form-control-user" placeholder="Contraseña" {{ form.password1 }} </div>
+                                            <div class="col-sm-6"><input class="form-control form-control-user" placeholder="Repite la contraseña" {{ form.password2 }} </div>
+                                        
+                                        </div><button class="btn btn-primary btn-block text-white btn-user" type="submit">Registrarme</button>
+                                        <hr>
+                                    </form>
+
+                                    <!-- Error messages -->
+                                    {{ form.username.errors }}
+                                    {{ form.email.errors }}
+                                    {{ form.first_name.errors }}
+                                    {{ form.last_name.errors }}
+                                    {{ form.password1.errors }}
+                                    {{ form.password2.errors }}
+
+                                    <div class="text-center"><a class="small" href="">¿Olvidaste la contraseña?</a></div>
+                                    <div class="text-center"><a class="small" href="/login/">¿Ya tienes una cuenta?</a></div>
                                 </div>
                             </div>
                         </div>
@@ -32,4 +49,5 @@
                 </div>
             </div>
         </div>
+    </div>
 {% endblock %}
