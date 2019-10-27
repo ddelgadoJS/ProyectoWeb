@@ -16,10 +16,21 @@
                                     <div class="text-center">
                                         <h4 class="text-dark mb-4">¡Bienvenido de regreso!</h4>
                                     </div>
-                                    <form action='.' method='POST'> {% csrf_token %}
+
+                                    <form action='login' class="user" method="post"> {% csrf_token %}
+                                        <div class="form-group"><input class="form-control form-control-user" placeholder="Usuario" {{ form.username }} </div>
+                                        <div class="form-group"><input class="form-control form-control-user" placeholder="Contraseña" {{ form.password }} </div>
+                                        <hr>
+                                    </form>
+
+                                    <!-- Error messages -->
+                                    {{ form.username.errors }}
+                                    {{ form.password.errors }}
+
+                                    <!-- <form action='.' method='POST'> {% csrf_token %}
                                         {{ form.as_p }}
                                         <button class="btn btn-primary btn-block text-white btn-user" type="submit">Login</button>
-                                    </form>
+                                    </form> -->
                                     <div class="text-center"><a class="small" href="">¿Olvidaste la contraseña?</a></div>
                                     <div class="text-center"><a class="small" href=".register">¡Crear una cuenta!</a></div>
                                 </div>
