@@ -26,8 +26,12 @@ urlpatterns = [
     #path('login/', user_login_view, name='login'),
     path('register/', user_create_view),
     path('admin/', admin.site.urls),
+    path('', include("pages.urls")), # Registration views.
     path('', include("django.contrib.auth.urls")), # Registration views.
 ] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
+
+
+
 
 """ urlpatterns += [
     path('accounts/', include('django.contrib.auth.urls')),

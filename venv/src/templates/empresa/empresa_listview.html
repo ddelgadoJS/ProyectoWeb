@@ -1,0 +1,39 @@
+   {% extends "base.html" %} 
+
+   {% block content_1 %} 
+
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-md-9 col-lg-12 col-xl-10">
+                <div class="card shadow-lg o-hidden border-0 my-5">
+                    <div class="card-body p-0">
+                        <div class="row">
+                            <div class="col-lg-6 d-none d-lg-flex">
+
+                              <h1>Empresas</h1>
+                              {% if empresa_list %}
+                              <div class="col-12 col-md-8">
+                                <div class="mt-3">
+                                  <div class="row">
+
+                                    {% for empresaItem in empresa_list %}
+
+                                    <div class="col-12 col-md-5 col-lg-3 col-xl-3" id="submissions">
+                                      {{ empresaItem.nombre }}
+                                    </div>
+
+                                    {% endfor %}
+                                  </div>
+
+                                </div>
+                              </div>
+
+                              {% endif %}
+
+                            </div>
+                        </div>
+                  </div>
+            </div>
+      </div>
+
+    {% endblock content_1 %}
