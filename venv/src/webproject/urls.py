@@ -20,6 +20,7 @@ from django.conf.urls.static import static
 
 from pages.views import home_view
 from users.views import user_create_view, user_login_view
+from pages.views import empresa_view
 
 urlpatterns = [
     path('', home_view, name='home'),
@@ -28,6 +29,7 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('', include("pages.urls")), # Registration views.
     path('', include("django.contrib.auth.urls")), # Registration views.
+    path('empresas/', empresa_view),
 ] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
 
 

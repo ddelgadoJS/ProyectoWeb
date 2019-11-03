@@ -6,15 +6,20 @@ from django.views.generic.edit import CreateView
 from django.views.generic.list import ListView
 from django.views.generic.detail import DetailView
 
-from pages.models import Empresa
-from pages.forms import EmpresaCreateForm
-
+from .models import Empresa
+from .forms import EmpresaCreateForm
 
 @login_required
 def home_view(request, *args, **kwargs):
     return render(request, "home.html", {})
 
-
+@login_required
+def empresa_view(request, *args, **kwargs):
+    registered_companies_queryset = Empresa.objects.all()
+    context = {
+        "registered_companies": registered_companies_queryset
+    }
+    return render(request, "empresas/empresas_home.html", context)
 #---------------------------------------------------------------------------
 # Empresa
 
