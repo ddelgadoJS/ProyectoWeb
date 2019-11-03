@@ -14,7 +14,7 @@
                 <ul class="nav navbar-nav text-light" id="accordionSidebar">
                     <li class="nav-item" role="presentation"><a class="nav-link" href='/'><i class="fas fa-tachometer-alt"></i><span>Dashboard</span></a></li>
                     <li class="nav-item" role="presentation"><a class="nav-link active" href='#'><i class="fas fa-building"></i><span>Empresas</span></a></li>
-                    <li class="nav-item" role="presentation"><a class="nav-link" href=''><i class="fas fa-route"></i><span>Rutas</span></a></li>
+                    <li class="nav-item" role="presentation"><a class="nav-link" href='/rutas'><i class="fas fa-route"></i><span>Rutas</span></a></li>
                 </ul>
                 <div class="text-center d-none d-md-inline"><button class="btn rounded-circle border-0" id="sidebarToggle" type="button"></button></div>
             </div>
@@ -53,7 +53,7 @@
                                     </div>
                                     <div class="card-body">
                                         {% for obj in registered_companies %} 
-                                            <p> {{ obj.nombre }} </p>
+                                            <a href="/empresas_modificar/?id={{ obj.id }}"> {{ obj.nombre }} </a><br>
                                         {% endfor %}
                                     </div>
                                 </div>

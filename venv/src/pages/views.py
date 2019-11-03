@@ -1,13 +1,13 @@
 from django.http import HttpResponse
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required
 
 from django.views.generic.edit import CreateView
 from django.views.generic.list import ListView
 from django.views.generic.detail import DetailView
 
-from .models import Empresa
-from .forms import EmpresaCreateForm
+from .models import Empresa, Ruta
+from .forms import *
 
 @login_required
 def home_view(request, *args, **kwargs):
@@ -28,12 +28,114 @@ def empresa_create_view(request, *args, **kwargs):
     form = EmpresaCreateForm(request.POST or None)
     if form.is_valid():
         form.save()
+        return redirect('/empresas')
 
     context = {
         'form': form
     }
     
     return render(request, "empresas/empresas_registrar.html", context)
+
+@login_required
+def empresa_modify_view(request, *args, **kwargs):
+    empresa_id = request.GET.get('id')
+    empresa = Empresa.objects.get(id=empresa_id)
+    data = {
+        'nombre': empresa.nombre,
+        'description': empresa.description,
+        'direccion': empresa.direccion,
+        'horario': empresa.horario,
+        'telefono': empresa.telefono,
+        'correo': empresa.correo,
+        'serv_origen': empresa.serv_origen,
+        'serv_destino': empresa.serv_destino,
+        'latitud': empresa.latitud,
+        'longitud': empresa.longitud
+    }
+
+    form = EmpresaUpdateForm(initial=data)
+    if request.method == 'POST':
+        if 'update_button' in request.POST:
+            form = EmpresaUpdateForm(request.POST, instance=empresa)
+            if form.is_valid():
+                form.save()
+                return redirect('/empresas')
+        elif 'delete_button' in request.POST:
+            Empresa.objects.get(id=empresa_id).delete()
+            return redirect('/empresas')
+
+    context = {
+        'form': form
+    }
+    
+    return render(request, "empresas/empresas_modificar.html", context)
+
+@login_required
+def ruta_view(request, *args, **kwargs):
+    registered_companies_queryset = Empresa.objects.all()
+
+    empresa_id = request.GET.get('id')
+    # Default company to show routes.
+    if empresa_id is None: empresa_id = registered_companies_queryset[0].id
+
+    company_routes = Ruta.objects.filter(empresa=empresa_id)
+
+    context = {
+        "registered_companies": registered_companies_queryset,
+        "company_routes": company_routes,
+        "empresa_id": int(empresa_id),
+    }
+
+    return render(request, "rutas/rutas_home.html", context)
+
+@login_required
+def ruta_create_view(request, *args, **kwargs):
+    form = RutaCreateForm(request.POST or None)
+    if form.is_valid():
+        form.save()
+        return redirect('/rutas')
+
+    context = {
+        'form': form
+    }
+    
+    return render(request, "rutas/rutas_registrar.html", context)
+
+@login_required
+def ruta_modify_view(request, *args, **kwargs):
+    ruta_id = request.GET.get('id')
+    ruta = Ruta.objects.get(id=ruta_id)
+    data = {
+        'empresa': ruta.empresa,
+        'nombre': ruta.nombre,
+        'description': ruta.description,
+        'costo': ruta.costo,
+        'horario': ruta.horario,
+        'duracion_viaje': ruta.duracion_viaje,
+        'inclusivo': ruta.inclusivo,
+        'origen_latitud': ruta.origen_latitud,
+        'origen_longitud': ruta.origen_longitud,
+        'destino_latitud': ruta.destino_latitud,
+        'destino_longitud': ruta.destino_longitud
+    }
+
+    form = RutaUpdateForm(initial=data)
+    if request.method == 'POST':
+        if 'update_button' in request.POST:
+            form = RutaUpdateForm(request.POST, instance=ruta)
+            if form.is_valid():
+                form.save()
+                return redirect('/rutas')
+        elif 'delete_button' in request.POST:
+            Ruta.objects.get(id=ruta_id).delete()
+            return redirect('/rutas')
+
+    context = {
+        'form': form
+    }
+    
+    return render(request, "rutas/rutas_modificar.html", context)
+
 #---------------------------------------------------------------------------
 # Empresa
 

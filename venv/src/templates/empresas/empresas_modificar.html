@@ -45,7 +45,7 @@
                         
                         <div class="card shadow mb-4">
                             <div class="card-header py-3">
-                                <h6 class="text-primary font-weight-bold m-0">Registrar nueva empresa</h6>
+                                <h6 class="text-primary font-weight-bold m-0">Actualizar información de empresa</h6>
                             </div>
                             <div class="card-body">
                                     <form method="post"> {% csrf_token %}
@@ -61,8 +61,22 @@
                                         <div class="form-group"></div><input class="form-control form-control-user" placeholder="Longitud" {{ form.longitud }}
 
                                         <div class="form-group"></div>
-                                        <button class="form-group btn btn-primary btn-block text-white btn-user" type="submit">Registrar</button>
+                                        <button class="form-group btn btn-primary btn-block text-white btn-user" type="submit" name='update_button'>Actualizar</button>
+                                        <button class="form-group btn btn-danger btn-block text-white btn-user" type="submit" name='delete_button'>Eliminar</button>
+                                        <!-- <a class="btn btn-danger btn-block text-white" href='/empresas'>Eliminar</a> -->
                                         <hr>
+
+                                        <!-- Error messages -->
+                                        {{ form.nombre.errors }}
+                                        {{ form.description.errors }}
+                                        {{ form.direccion.errors }}
+                                        {{ form.horario.errors }}
+                                        {{ form.telefono.errors }}
+                                        {{ form.correo.errors }}
+                                        {{ form.serv_origen.errors }}
+                                        {{ form.serv_destino.errors }}
+                                        {{ form.latitud.errors }}
+                                        {{ form.longitud.errors }}
                                     </form>
                             </div>
                         </div>
