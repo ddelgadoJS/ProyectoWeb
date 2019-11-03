@@ -12,9 +12,9 @@
                 </a>
                 <hr class="sidebar-divider my-0">
                 <ul class="nav navbar-nav text-light" id="accordionSidebar">
-                    <li class="nav-item" role="presentation"><a class="nav-link active" href='/'><i class="fas fa-tachometer-alt"></i><span>Dashboard</span></a></li>
-                    <li class="nav-item" role="presentation"><a class="nav-link" href='empresas/'><i class="fas fa-building"></i><span>Empresas</span></a></li>
-                    <li class="nav-item" role="presentation"><a class="nav-link" href='rutas/'><i class="fas fa-route"></i><span>Rutas</span></a></li>
+                    <li class="nav-item" role="presentation"><a class="nav-link" href='/'><i class="fas fa-tachometer-alt"></i><span>Dashboard</span></a></li>
+                    <li class="nav-item" role="presentation"><a class="nav-link" href='/empresas'><i class="fas fa-building"></i><span>Empresas</span></a></li>
+                    <li class="nav-item" role="presentation"><a class="nav-link active" href='#'><i class="fas fa-route"></i><span>Rutas</span></a></li>
                 </ul>
                 <div class="text-center d-none d-md-inline"><button class="btn rounded-circle border-0" id="sidebarToggle" type="button"></button></div>
             </div>
@@ -39,20 +39,37 @@
             </div>
             </nav>
             <div class="container-fluid">
-                <h3 class="text-dark mb-4">Rutas de bus en Costa Rica</h3>
+                <h3 class="text-dark mb-4">Rutas</h3>
                 <div class="row mb-3">
                     <div class="col-lg-4">
-                        <div class="card mb-3">
-                            <div class="card-body text-center shadow">
-                                INFO
-                            </div>
-                        </div>
+                        
                         <div class="card shadow mb-4">
                             <div class="card-header py-3">
-                                <h6 class="text-primary font-weight-bold m-0">Bloque de información</h6>
+                                <h6 class="text-primary font-weight-bold m-0">Registrar nueva ruta</h6>
                             </div>
                             <div class="card-body">
-                                INFO
+                                    <form method="post"> {% csrf_token %}
+                                        <div class="col-sm-6"></div><select class="form-control" placeholder="Nombre" {{ form.empresa }}
+                                        <div class="form-group"></div><input class="form-control form-control-user" placeholder="Nombre" {{ form.nombre }}
+                                        <div class="form-group"></div><input class="form-control form-control-user" placeholder="Descripcion" {{ form.description }}
+                                        <div class="form-group"></div><input class="form-control form-control-user" placeholder="Costo" {{ form.costo }}
+                                        <div class="form-group"></div><input class="form-control form-control-user" placeholder="Horario" {{ form.horario }}
+                                        <div class="form-group"></div><input class="form-control form-control-user" placeholder="Duración" {{ form.duracion_viaje }}
+                                            
+                                        <div class="form-group"></div><input class="form-control form-control-user" placeholder="Origen (latitud)" {{ form.origen_latitud }}
+                                        <div class="form-group"></div><input class="form-control form-control-user" placeholder="Origen (longitud)" {{ form.origen_longitud }}
+                                        <div class="form-group"></div><input class="form-control form-control-user" placeholder="Destino (latitud)" {{ form.destino_latitud }}
+                                        <div class="form-group"></div><input class="form-control form-control-user" placeholder="Destino (longitud)" {{ form.destino_longitud }}
+
+                                        <div class="form-check"><br>
+                                            <input type="checkbox" class="form-check-input" id="exampleCheck1" {{ form.inclusivo }}
+                                            <label class="form-check-label" for="exampleCheck1">Apto para sillas de ruedas</label>
+                                        </div>
+
+                                        <div class="form-group"></div>
+                                        <button class="form-group btn btn-primary btn-block text-white btn-user" type="submit">Registrar</button>
+                                        <hr>
+                                    </form>
                             </div>
                         </div>
                     </div>
@@ -64,7 +81,7 @@
                                         <p class="text-primary m-0 font-weight-bold">Mapa</p>
                                     </div>
                                     <div class="card-body">
-                                        AQUÍ VA EL MAPA
+                                        MAPA PARA LATITUD Y LONGITUD
                                     </div>
                                 </div>
                             </div>

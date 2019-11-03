@@ -1,38 +1,71 @@
 from django import forms
-from .models import Empresa
+from django.contrib.auth.models import User
+from django.contrib.auth.forms import UserCreationForm
+
+from .models import Empresa, Ruta
 
 class EmpresaCreateForm(forms.ModelForm):
-
-    nombre = forms.CharField(
-        label='Nombre Empresa', 
-        widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Nombre de Empresa'})
-        )
-
-    description = forms.CharField(
-        label='Descripcion de la empresa', 
-        widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Descripcion de la Empresa'})
-        )
-
-    direccion = forms.CharField(
-        label='Direccion de la Empresa', 
-        widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Direccion de la Empresa'})
-        )
-
-    horario = forms.CharField(
-        label='Horario de la Empresa', 
-        widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Horario de la Empresa'})
-        )
-
-    telefono = forms.CharField(
-        label='Telefono de la Empresa', 
-        widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Telefono de la Empresa'})
-        )
-
-    correo = forms.EmailField(
-        label='Correo de la Empresa', 
-        widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Correo de la Empresa'})
-        )
-
     class Meta:
         model = Empresa
-        fields = ['nombre', 'description', 'direccion', 'horario', 'telefono', 'correo', 'serv_origen', 'serv_destino', 'latitud', 'longitud',]
+        fields = [
+            'nombre',
+            'description',
+            'direccion',
+            'horario',
+            'telefono',
+            'correo',
+            'serv_origen',
+            'serv_destino',
+            'latitud',
+            'longitud'
+        ]
+
+class EmpresaUpdateForm(forms.ModelForm):
+    class Meta:
+        model = Empresa
+        fields = [
+            'nombre',
+            'description',
+            'direccion',
+            'horario',
+            'telefono',
+            'correo',
+            'serv_origen',
+            'serv_destino',
+            'latitud',
+            'longitud'
+        ]
+
+class RutaCreateForm(forms.ModelForm):
+    class Meta:
+        model = Ruta
+        fields = [
+            'empresa',
+            'nombre',
+            'description',
+            'costo',
+            'horario',
+            'duracion_viaje',
+            'inclusivo',
+            'origen_latitud',
+            'origen_longitud',
+            'destino_latitud',
+            'destino_longitud'
+        ]
+
+class RutaUpdateForm(forms.ModelForm):
+    class Meta:
+        model = Ruta
+        fields = [
+            'empresa',
+            'nombre',
+            'description',
+            'costo',
+            'horario',
+            'duracion_viaje',
+            'inclusivo',
+            'origen_latitud',
+            'origen_longitud',
+            'destino_latitud',
+            'destino_longitud'
+        ]
