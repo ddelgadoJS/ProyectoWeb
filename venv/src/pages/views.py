@@ -16,10 +16,24 @@ def home_view(request, *args, **kwargs):
 @login_required
 def empresa_view(request, *args, **kwargs):
     registered_companies_queryset = Empresa.objects.all()
+
     context = {
-        "registered_companies": registered_companies_queryset
+        "registered_companies": registered_companies_queryset,
     }
+
     return render(request, "empresas/empresas_home.html", context)
+
+@login_required
+def empresa_create_view(request, *args, **kwargs):
+    form = EmpresaCreateForm(request.POST or None)
+    if form.is_valid():
+        form.save()
+
+    context = {
+        'form': form
+    }
+    
+    return render(request, "empresas/empresas_registrar.html", context)
 #---------------------------------------------------------------------------
 # Empresa
 
