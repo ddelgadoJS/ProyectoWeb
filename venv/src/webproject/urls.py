@@ -34,7 +34,8 @@ urlpatterns = [
     path('empresas_modificar/', empresa_modify_view),
     path('rutas/', ruta_view),
     path('rutas_registrar/', ruta_create_view),
-    path('rutas_modificar/', ruta_modify_view)
+    path('rutas_modificar/', ruta_modify_view),
+    path('perfil/', profile_view)
 ] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
 
 
