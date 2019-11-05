@@ -136,6 +136,26 @@ def ruta_modify_view(request, *args, **kwargs):
     
     return render(request, "rutas/rutas_modificar.html", context)
 
+@login_required
+def profile_view(request, *args, **kwargs):
+
+    if request.method == 'POST':
+        if 'update_button' in request.POST:
+            #form = RutaUpdateForm(request.POST, instance=ruta)
+            #if form.is_valid():
+                #form.save()
+                return redirect('/perfil')
+        elif 'delete_button' in request.POST:
+            request.user.is_active = False
+            request.user.save()
+            return redirect('/login')
+
+    context = {
+        'user_id': request.user.id
+    }
+    
+    return render(request, "perfil.html", context)
+
 #---------------------------------------------------------------------------
 # Empresa
 
