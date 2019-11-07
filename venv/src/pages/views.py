@@ -8,6 +8,7 @@ from django.views.generic.detail import DetailView
 
 from .models import Empresa, Ruta
 from .forms import *
+from .lib import crear_log
 
 @login_required
 def home_view(request, *args, **kwargs):
@@ -27,7 +28,8 @@ def empresa_view(request, *args, **kwargs):
 def empresa_create_view(request, *args, **kwargs):
     form = EmpresaCreateForm(request.POST or None)
     if form.is_valid():
-        form.save()
+        empresa = form.save()
+        crear_log(request.user, "crea", empresa=empresa)
         return redirect('/empresas')
 
     context = {
@@ -58,7 +60,8 @@ def empresa_modify_view(request, *args, **kwargs):
         if 'update_button' in request.POST:
             form = EmpresaUpdateForm(request.POST, instance=empresa)
             if form.is_valid():
-                form.save()
+                empresa = form.save()
+                crear_log(request.user, "actualiza", empresa=empresa)
                 return redirect('/empresas')
         elif 'delete_button' in request.POST:
             Empresa.objects.get(id=empresa_id).delete()

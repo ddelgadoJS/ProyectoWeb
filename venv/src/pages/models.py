@@ -1,4 +1,6 @@
 from django.db import models
+from django.contrib.auth.models import User
+
 
 class Empresa(models.Model):
     """
@@ -64,4 +66,27 @@ class Ruta(models.Model):
 
     def __str__(self):
         return f'c/{self.nombre}'
+
+
+class Log(models.Model):
+    """
+    Bitacora
+
+    <accion> = actualizar | borrar | crear
+
+    operacion=<accion> ruta
+    operacion=<accion> empresa
+    operacion=<accion> parada
+
+    """
+    usuario = models.ForeignKey(User, null=True, on_delete=models.SET_NULL)
+    fecha_creacion = models.DateTimeField(auto_now=True)
+    operacion = models.CharField(max_length=10000)
+    empresa = models.ForeignKey(Empresa, null=True, on_delete=models.SET_NULL)
+    ruta = models.ForeignKey(Ruta, null=True, on_delete=models.SET_NULL)
+    parada = models.ForeignKey(Parada, null=True, on_delete=models.SET_NULL)
+
+    def __str__(self):
+
+        return f'{self.operacion} Fecha: {self.fecha_creacion}'
 
