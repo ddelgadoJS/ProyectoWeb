@@ -1,0 +1,89 @@
+{% extends 'home.html' %}
+{% load static %}
+
+{% block content_sidebar %}
+<li class="nav-item" role="presentation"><a class="nav-link" href='/'><i class="fas fa-tachometer-alt"></i><span>Dashboard</span></a></li>
+<li class="nav-item" role="presentation"><a class="nav-link" href='/empresas/'><i class="fas fa-building"></i><span>Empresas</span></a></li>
+<li class="nav-item" role="presentation"><a class="nav-link" href='/rutas/'><i class="fas fa-route"></i><span>Rutas</span></a></li>
+<li class="nav-item" role="presentation"><a class="nav-link active" href='/paradas/'><i class="fas fa-map-marked-alt"></i><span>Paradas</span></a></li>
+{% endblock %}
+
+{% block content_2 %}
+<div class="container-fluid">
+    <h3 class="text-dark mb-4">Rutas</h3>
+    <div class="row mb-3">
+        <div class="col-lg-4">
+            
+            <div class="card shadow mb-4">
+                <div class="card-header py-3">
+                    <h6 class="text-primary font-weight-bold m-0">Actualizar información de parada</h6>
+                </div>
+                <div class="card-body">
+                        <form method="post"> {% csrf_token %}
+                                <div class="col-sm-6"></div><select class="form-control" {{ form.ruta }}
+                                <div class="form-group"></div><input class="form-control form-control-user" placeholder="Nombre" {{ form.nombre }}
+                                <div class="form-group"></div><input class="form-control form-control-user" placeholder="Descripción" {{ form.description }}
+                                <div class="form-group"></div><input class="form-control form-control-user" placeholder="Horario" {{ form.horario }}
+                                    
+                                <div class="form-group"></div><input class="form-control form-control-user" placeholder="Latitud" id="latitudID" {{ form.latitud }}
+                                <div class="form-group"></div><input class="form-control form-control-user" placeholder="Longitud" id="longitudID" {{ form.longitud }}
+
+                            <div class="form-group"></div>
+                            <button class="form-group btn btn-primary btn-block text-white btn-user" type="submit" name='update_button'>Actualizar</button>
+                            <button class="form-group btn btn-danger btn-block text-white btn-user" type="submit" name='delete_button'>Eliminar</button>
+                            <hr>
+
+                            <!-- Error messages -->
+                            {{ form.nombre.errors }}
+                            {{ form.description.errors }}
+                            {{ form.horario.errors }}
+                            {{ form.latitud.errors }}
+                            {{ form.longitud.errors }}
+                        </form>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-8">
+                <div class="row">
+                        <div class="col">
+                                <div class="card shadow mb-">
+                                    <div class="card-title">
+                                            <div id = "map" style="height: 600px;">
+                                                    <div id = "map" style="height: 550px;">
+                                                        <script>
+                                                            var latitud = document.getElementById("latitudID").value;
+                                                            var longitud = document.getElementById("longitudID").value;
+                                                            
+                                                            var map = L.map('map').setView([latitud, longitud], 15);
+                                                            var marker = L.marker([latitud, longitud], {draggable:true, autoPan: true}).addTo(map).bindPopup("Ubicación de empresa").openPopup();
+                        
+                                                            L.tileLayer('https://api.maptiler.com/maps/streets/{z}/{x}/{y}.png?key=tctLp8XfyJogfuDP1C2H', {
+                                                                attribution: '<a href="https://www.maptiler.com/copyright/" target="_blank">&copy; MapTiler</a> <a href="https://www.openstreetmap.org/copyright" target="_blank">&copy; OpenStreetMap contributors</a>',
+                                                            }).addTo(map);
+                    
+                                                            function moveMarker(e){
+                                                                marker.setLatLng(e.latlng);
+                                                                document.getElementById("latitudID").setAttribute('value', e.latlng.lat);
+                                                                document.getElementById("longitudID").setAttribute('value', e.latlng.lng);
+                                                            }
+                        
+                                                            map.on('click', moveMarker);
+                        
+                                                        </script>
+                                            </div>
+                                        </div>
+                                        <div class="card-body text-center">
+                                                <div class="radio">
+                                                    <label><input id="origen_rb_id" type="radio" name="optradio" checked>Origen</label>
+                                                    <label><input id="destino_rb_id" type="radio" name="optradio">Destino</label>
+                                                </div>
+                                            </div>
+                                </div>
+                            </div>
+                </div>
+            </div>
+    </div>
+    <div class="card shadow mb-5"></div>
+</div>
+</div>
+{% endblock %}
