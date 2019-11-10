@@ -27,10 +27,10 @@
                                 <div class="form-group"></div><input class="form-control form-control-user" placeholder="Horario" {{ form.horario }}
                                 <div class="form-group"></div><input class="form-control form-control-user" placeholder="Duración" {{ form.duracion_viaje }}
                                     
-                                <div class="form-group"></div><input class="form-control form-control-user" placeholder="Origen (latitud)" id="origen_lat_id" {{ form.origen_latitud }}
-                                <div class="form-group"></div><input class="form-control form-control-user" placeholder="Origen (longitud)" id="origen_lon_id" {{ form.origen_longitud }}
-                                <div class="form-group"></div><input class="form-control form-control-user" placeholder="Destino (latitud)" id="destino_lat_id" {{ form.destino_latitud }}
-                                <div class="form-group"></div><input class="form-control form-control-user" placeholder="Destino (longitud)" id="destino_lon_id" {{ form.destino_longitud }}
+                                <div class="form-group"></div><input type="hidden" class="form-control form-control-user" placeholder="Origen (latitud)" id="origen_lat_id" {{ form.origen_latitud }}
+                                <div class="form-group"></div><input type="hidden" class="form-control form-control-user" placeholder="Origen (longitud)" id="origen_lon_id" {{ form.origen_longitud }}
+                                <div class="form-group"></div><input type="hidden" class="form-control form-control-user" placeholder="Destino (latitud)" id="destino_lat_id" {{ form.destino_latitud }}
+                                <div class="form-group"></div><input type="hidden" class="form-control form-control-user" placeholder="Destino (longitud)" id="destino_lon_id" {{ form.destino_longitud }}
 
                                 <div class="form-check"><br>
                                     <input type="checkbox" class="form-check-input" id="exampleCheck1" {{ form.inclusivo }}
@@ -63,52 +63,76 @@
                         <div class="col">
                                 <div class="card shadow mb-">
                                     <div class="card-title">
-                                            <div id = "map" style="height: 600px;">
+                                            <div id = "map" style="height: 520px;">
                                                 <script>
                                                     var origen_latitud = document.getElementById("origen_lat_id").value;
                                                     var origen_longitud = document.getElementById("origen_lon_id").value;
                                                     var destino_latitud = document.getElementById("destino_lat_id").value;
                                                     var destino_longitud = document.getElementById("destino_lon_id").value;
 
-                                                    var paradasString = (("{{paradas}}").replace(/&(l|g|quo|\[)t;/g, function(a,b){
-                                                                        return {
-                                                                            l   : '<',
-                                                                            g   : '>',
-                                                                            quo : '"',
-                                                                            '[' : ''
-                                                                        }[b];
-                                                                    })).slice(1,-1);
+                                                    start_icon = L.icon({
+                                                        iconUrl: 'https://www.mapquestapi.com/staticmap/geticon?uri=poi-red_1.png',
+                                                        iconSize: [20, 29],
+                                                        iconAnchor: [10, 29],
+                                                        popupAnchor: [0, -29]
+                                                    });
+
+                                                    parada_icon = L.icon({
+                                                        iconUrl: 'https://www.mapquestapi.com/staticmap/geticon?uri=poi-orange_1.png',
+                                                        iconSize: [20, 29],
+                                                        iconAnchor: [10, 29],
+                                                        popupAnchor: [0, -29]
+                                                    });
+                                                    
+                                                    end_icon = L.icon({
+                                                        iconUrl: 'https://www.mapquestapi.com/staticmap/geticon?uri=poi-blue_1.png',
+                                                        iconSize: [20, 29],
+                                                        iconAnchor: [10, 29],
+                                                        popupAnchor: [0, -29]
+                                                    });
                                                     
                                                     var paradas = JSON.parse(("{{paradas}}").replace(/&(l|g|quo)t;/g, function(a,b){
-                                                                        return {
-                                                                            l   : '<',
-                                                                            g   : '>',
-                                                                            quo : '"'
-                                                                        }[b];
-                                                                    }));
+                                                        return {
+                                                            l   : '<',
+                                                            g   : '>',
+                                                            quo : '"'
+                                                        }[b];
+                                                    }));
 
                                                     var map = L.map('map').setView([origen_latitud, origen_longitud], 15);
-                                                    var markerOrigen = L.marker([origen_latitud, origen_longitud], {draggable:true, autoPan: true}).addTo(map).bindPopup("Origen").openPopup();
-                                                    var markerDestino = L.marker([destino_latitud, destino_longitud], {draggable:true, autoPan: true}).addTo(map).bindPopup("Destino").openPopup();
-                
+                                                    var markerOrigen = L.marker([origen_latitud, origen_longitud], {icon: start_icon, autoPan: true}).addTo(map).bindPopup("Origen").openPopup();
+                                                    var markerDestino = L.marker([destino_latitud, destino_longitud], {icon: end_icon, autoPan: true}).addTo(map).bindPopup("Destino").openPopup();
+                                                    var plotRutaCoordenadas = [[origen_latitud, origen_longitud], [destino_latitud, destino_longitud]];
+
                                                     // Adding markers to map
                                                     paradas.forEach(function(item) {
-                                                        L.marker([item.fields.latitud, item.fields.longitud], {draggable:true, autoPan: true}).addTo(map).bindPopup(item.fields.nombre).openPopup();
+                                                        L.marker([item.fields.latitud, item.fields.longitud], {icon: parada_icon}).addTo(map).bindPopup(item.fields.nombre).openPopup();
+                                                        plotRutaCoordenadas.splice(-1, 0, [item.fields.latitud, item.fields.longitud]);
                                                     });
 
                                                     L.tileLayer('https://api.maptiler.com/maps/streets/{z}/{x}/{y}.png?key=tctLp8XfyJogfuDP1C2H', {
                                                         attribution: '<a href="https://www.maptiler.com/copyright/" target="_blank">&copy; MapTiler</a> <a href="https://www.openstreetmap.org/copyright" target="_blank">&copy; OpenStreetMap contributors</a>',
                                                     }).addTo(map);
+
+                                                    var plottedPolyline = L.polyline(plotRutaCoordenadas).addTo(map);
             
                                                     function moveMarker(e){
                                                         if (document.getElementById('origen_rb_id').checked) {
                                                             document.getElementById("origen_lat_id").setAttribute('value', e.latlng.lat);
                                                             document.getElementById("origen_lon_id").setAttribute('value', e.latlng.lng);
                                                             markerOrigen.setLatLng(e.latlng);
+
+                                                            map.removeLayer(plottedPolyline);
+                                                            plotRutaCoordenadas.splice(0, 1, [e.latlng.lat, e.latlng.lng]);
+                                                            plottedPolyline = L.polyline(plotRutaCoordenadas).addTo(map);
                                                         } else if (document.getElementById('destino_rb_id').checked) {
                                                             document.getElementById("destino_lat_id").setAttribute('value', e.latlng.lat);
                                                             document.getElementById("destino_lon_id").setAttribute('value', e.latlng.lng);
                                                             markerDestino.setLatLng(e.latlng);
+
+                                                            map.removeLayer(plottedPolyline);
+                                                            plotRutaCoordenadas.splice(-1, 1, [e.latlng.lat, e.latlng.lng]);
+                                                            plottedPolyline = L.polyline(plotRutaCoordenadas).addTo(map);
                                                         }
                                                     }
                 
