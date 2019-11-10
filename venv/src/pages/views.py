@@ -1,6 +1,7 @@
 from django.http import HttpResponse
 from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required
+from django.core import serializers
 
 from django.views.generic.edit import CreateView
 from django.views.generic.list import ListView
@@ -139,6 +140,7 @@ def ruta_create_view(request, *args, **kwargs):
 def ruta_modify_view(request, *args, **kwargs):
     ruta_id = request.GET.get('id')
     ruta = Ruta.objects.get(id=ruta_id)
+    paradas = Parada.objects.filter(ruta=ruta_id)
     data = {
         'empresa': ruta.empresa,
         'nombre': ruta.nombre,
@@ -165,7 +167,8 @@ def ruta_modify_view(request, *args, **kwargs):
             return redirect('/rutas')
 
     context = {
-        'form': form
+        'form': form,
+        'paradas': serializers.serialize("json", paradas)
     }
     
     return render(request, "rutas/rutas_modificar.html", context)
