@@ -126,7 +126,8 @@ def ruta_view(request, *args, **kwargs):
 def ruta_create_view(request, *args, **kwargs):
     form = RutaCreateForm(request.POST or None)
     if form.is_valid():
-        form.save()
+        ruta = form.save()
+        crear_log(request.user, "crea", ruta=ruta)
         return redirect('/rutas')
 
     context = {
@@ -158,7 +159,8 @@ def ruta_modify_view(request, *args, **kwargs):
         if 'update_button' in request.POST:
             form = RutaUpdateForm(request.POST, instance=ruta)
             if form.is_valid():
-                form.save()
+                ruta = form.save()
+                crear_log(request.user, "actualiza", ruta=ruta)
                 return redirect('/rutas')
         elif 'delete_button' in request.POST:
             Ruta.objects.get(id=ruta_id).delete()
@@ -192,7 +194,8 @@ def parada_view(request, *args, **kwargs):
 def parada_create_view(request, *args, **kwargs):
     form = ParadaCreateForm(request.POST or None)
     if form.is_valid():
-        form.save()
+        parada = form.save()
+        crear_log(request.user, "crea", parada=parada)
         return redirect('/paradas')
 
     context = {
@@ -219,7 +222,8 @@ def parada_modify_view(request, *args, **kwargs):
         if 'update_button' in request.POST:
             form = ParadaUpdateForm(request.POST, instance=parada)
             if form.is_valid():
-                form.save()
+                parada = form.save()
+                crear_log(request.user, "actualiza", parada=parada)
                 return redirect('/paradas')
         elif 'delete_button' in request.POST:
             Parada.objects.get(id=parada_id).delete()
