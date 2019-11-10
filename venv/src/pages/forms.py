@@ -36,6 +36,16 @@ class EmpresaUpdateForm(forms.ModelForm):
             'longitud'
         ]
 
+class UsuarioUpdateForm(forms.ModelForm):
+    class Meta:
+        model = User
+        fields = [
+            'username',
+            'email',
+            'first_name',
+            'last_name'
+        ]
+
 class RutaCreateForm(forms.ModelForm):
     class Meta:
         model = Ruta
