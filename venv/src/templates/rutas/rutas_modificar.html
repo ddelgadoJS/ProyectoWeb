@@ -26,10 +26,10 @@
                                 <div class="form-group"></div><input class="form-control form-control-user" placeholder="Horario" {{ form.horario }}
                                 <div class="form-group"></div><input class="form-control form-control-user" placeholder="Duración" {{ form.duracion_viaje }}
                                     
-                                <div class="form-group"></div><input class="form-control form-control-user" placeholder="Origen (latitud)" {{ form.origen_latitud }}
-                                <div class="form-group"></div><input class="form-control form-control-user" placeholder="Origen (longitud)" {{ form.origen_longitud }}
-                                <div class="form-group"></div><input class="form-control form-control-user" placeholder="Destino (latitud)" {{ form.destino_latitud }}
-                                <div class="form-group"></div><input class="form-control form-control-user" placeholder="Destino (longitud)" {{ form.destino_longitud }}
+                                <div class="form-group"></div><input class="form-control form-control-user" placeholder="Origen (latitud)" id="origen_lat_id" {{ form.origen_latitud }}
+                                <div class="form-group"></div><input class="form-control form-control-user" placeholder="Origen (longitud)" id="origen_lon_id" {{ form.origen_longitud }}
+                                <div class="form-group"></div><input class="form-control form-control-user" placeholder="Destino (latitud)" id="destino_lat_id" {{ form.destino_latitud }}
+                                <div class="form-group"></div><input class="form-control form-control-user" placeholder="Destino (longitud)" id="destino_lon_id" {{ form.destino_longitud }}
 
                                 <div class="form-check"><br>
                                     <input type="checkbox" class="form-check-input" id="exampleCheck1" {{ form.inclusivo }}
@@ -58,19 +58,52 @@
             </div>
         </div>
         <div class="col-lg-8">
-            <div class="row">
-                <div class="col">
-                    <div class="card shadow mb-3">
-                        <div class="card-header py-3">
-                            <p class="text-primary m-0 font-weight-bold">Mapa</p>
-                        </div>
-                        <div class="card-body">
-                            MAPA PARA LATITUD Y LONGITUD
-                        </div>
-                    </div>
+                <div class="row">
+                        <div class="col">
+                                <div class="card shadow mb-">
+                                    <div class="card-title">
+                                            <div id = "map" style="height: 600px;">
+                                                <script>
+                                                    var origen_latitud = document.getElementById("origen_lat_id").value;
+                                                    var origen_longitud = document.getElementById("origen_lon_id").value;
+                                                    var destino_latitud = document.getElementById("destino_lat_id").value;
+                                                    var destino_longitud = document.getElementById("destino_lon_id").value;
+
+                                                    var map = L.map('map').setView([origen_latitud, origen_longitud], 15);
+                                                    var markerOrigen = L.marker([origen_latitud, origen_longitud], {draggable:true, autoPan: true}).addTo(map).bindPopup("Origen").openPopup();
+                                                    var markerDestino = L.marker([destino_latitud, destino_longitud], {draggable:true, autoPan: true}).addTo(map).bindPopup("Destino").openPopup();
+                
+                                                    L.tileLayer('https://api.maptiler.com/maps/streets/{z}/{x}/{y}.png?key=tctLp8XfyJogfuDP1C2H', {
+                                                        attribution: '<a href="https://www.maptiler.com/copyright/" target="_blank">&copy; MapTiler</a> <a href="https://www.openstreetmap.org/copyright" target="_blank">&copy; OpenStreetMap contributors</a>',
+                                                    }).addTo(map);
+            
+                                                    function moveMarker(e){
+                                                        if (document.getElementById('origen_rb_id').checked) {
+                                                            document.getElementById("origen_lat_id").setAttribute('value', e.latlng.lat);
+                                                            document.getElementById("origen_lon_id").setAttribute('value', e.latlng.lng);
+                                                            markerOrigen.setLatLng(e.latlng);
+                                                        } else if (document.getElementById('destino_rb_id').checked) {
+                                                            document.getElementById("destino_lat_id").setAttribute('value', e.latlng.lat);
+                                                            document.getElementById("destino_lon_id").setAttribute('value', e.latlng.lng);
+                                                            markerDestino.setLatLng(e.latlng);
+                                                        }
+                                                    }
+                
+                                                    map.on('click', moveMarker);
+                
+                                                </script>
+                                            </div>
+                                        </div>
+                                        <div class="card-body text-center">
+                                                <div class="radio">
+                                                    <label><input id="origen_rb_id" type="radio" name="optradio" checked>Origen</label>
+                                                    <label><input id="destino_rb_id" type="radio" name="optradio">Destino</label>
+                                                </div>
+                                            </div>
+                                </div>
+                            </div>
                 </div>
             </div>
-        </div>
     </div>
     <div class="card shadow mb-5"></div>
 </div>

@@ -10,6 +10,9 @@ from .models import Empresa, Ruta
 from .forms import *
 from .lib import crear_log
 
+from django.contrib.auth.models import User
+from django.views.generic.edit import UpdateView
+
 @login_required
 def home_view(request, *args, **kwargs):
     return render(request, "home.html", {})
@@ -72,6 +75,34 @@ def empresa_modify_view(request, *args, **kwargs):
     }
     
     return render(request, "empresas/empresas_modificar.html", context)
+
+@login_required
+def usuario_modify_view(request, *args, **kwargs):
+    data = {
+        'username': request.user.username,
+        'email': request.user.email,
+        'first_name': request.user.first_name,
+        'last_name': request.user.last_name
+        
+    }
+
+    form = UsuarioUpdateForm(initial=data)
+    """ if request.method == 'POST':
+        if 'update_button' in request.POST:
+            form = EmpresaUpdateForm(request.POST, instance=empresa)
+            if form.is_valid():
+                empresa = form.save()
+                crear_log(request.user, "actualiza", empresa=empresa)
+                return redirect('/empresas')
+        elif 'delete_button' in request.POST:
+            Empresa.objects.get(id=empresa_id).delete()
+            return redirect('/empresas') """
+
+    context = {
+        'form': form
+    }
+    
+    return render(request, "/perfil.html", context)
 
 @login_required
 def ruta_view(request, *args, **kwargs):
@@ -141,12 +172,26 @@ def ruta_modify_view(request, *args, **kwargs):
 
 @login_required
 def profile_view(request, *args, **kwargs):
+    data = {
+        'username': request.user.username,
+        'email': request.user.email,
+        'first_name': request.user.first_name,
+        'last_name': request.user.last_name,
+        'password': ''
+    }
 
+    form = UsuarioUpdateForm(initial=data, instance=request.user)
+    #form = UsuarioUpdateForm(data=request.POST, instance=request.user)
     if request.method == 'POST':
         if 'update_button' in request.POST:
-            #form = RutaUpdateForm(request.POST, instance=ruta)
-            #if form.is_valid():
-                #form.save()
+            form = UsuarioUpdateForm(request.POST)
+            if form.is_valid():
+                request.user.username = request.POST.get('username')
+                request.user.email = request.POST.get('email')
+                request.user.first_name = request.POST.get('first_name')
+                request.user.last_name = request.POST.get('last_name')
+                #request.user.set_password(request.POST.get('password'))
+                request.user.save()
                 return redirect('/perfil')
         elif 'delete_button' in request.POST:
             request.user.is_active = False
@@ -154,7 +199,7 @@ def profile_view(request, *args, **kwargs):
             return redirect('/login')
 
     context = {
-        'user_id': request.user.id
+        'form': form
     }
     
     return render(request, "perfil.html", context)

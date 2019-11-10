@@ -15,16 +15,25 @@
             
             <div class="card shadow mb-4">
                 <div class="card-header py-3">
-                    <h6 class="text-primary font-weight-bold m-0">Actualizar información de ruta</h6>
+                    <h6 class="text-primary font-weight-bold m-0">Información del usuario</h6>
                 </div>
                 <div class="card-body">
-                    FORM DE USUARIO
                     <form method="post"> {% csrf_token %}
-
+                        <div class="col-sm-6"></div><input class="form-control form-control-user" placeholder="Usuario" {{ form.username }}
+                        <div class="form-group"></div><input class="form-control form-control-user" placeholder="Correo" {{ form.email }}
+                        <div class="form-group"></div><input class="form-control form-control-user" placeholder="Nombre" {{ form.first_name }}
+                        <div class="form-group"></div><input class="form-control form-control-user" placeholder="Apellido" {{ form.last_name }}
+                        
                         <div class="form-group"></div>
                         <button class="form-group btn btn-primary btn-block text-white btn-user" type="submit" name='update_button'>Actualizar</button>
                         <button class="form-group btn btn-danger btn-block text-white btn-user" type="submit" name='delete_button'>Desactivar cuenta</button>
                         <hr>
+
+                        <!-- Error messages -->
+                        {{ form.username.errors }}
+                        {{ form.email.errors }}
+                        {{ form.first_name.errors }}
+                        {{ form.last_name.errors }}
                     </form>
                 </div>
             </div>
