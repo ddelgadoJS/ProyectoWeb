@@ -2,7 +2,7 @@ from django import forms
 from django.contrib.auth.models import User
 from django.contrib.auth.forms import UserCreationForm
 
-from .models import Empresa, Ruta
+from .models import *
 
 class EmpresaCreateForm(forms.ModelForm):
     class Meta:
@@ -78,4 +78,28 @@ class RutaUpdateForm(forms.ModelForm):
             'origen_longitud',
             'destino_latitud',
             'destino_longitud'
+        ]
+    
+class ParadaCreateForm(forms.ModelForm):
+    class Meta:
+        model = Parada
+        fields = [
+            'ruta',
+            'nombre',
+            'description',
+            'horario',
+            'latitud',
+            'longitud'
+        ]
+
+class ParadaUpdateForm(forms.ModelForm):
+    class Meta:
+        model = Parada
+        fields = [
+            'ruta',
+            'nombre',
+            'description',
+            'horario',
+            'latitud',
+            'longitud'
         ]

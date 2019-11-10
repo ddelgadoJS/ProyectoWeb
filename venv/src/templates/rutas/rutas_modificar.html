@@ -5,6 +5,7 @@
 <li class="nav-item" role="presentation"><a class="nav-link" href='/'><i class="fas fa-tachometer-alt"></i><span>Dashboard</span></a></li>
 <li class="nav-item" role="presentation"><a class="nav-link" href='/empresas/'><i class="fas fa-building"></i><span>Empresas</span></a></li>
 <li class="nav-item" role="presentation"><a class="nav-link active" href='/rutas/'><i class="fas fa-route"></i><span>Rutas</span></a></li>
+<li class="nav-item" role="presentation"><a class="nav-link" href='/paradas/'><i class="fas fa-map-marked-alt"></i><span>Paradas</span></a></li>
 {% endblock %}
 
 {% block content_2 %}
@@ -19,7 +20,7 @@
                 </div>
                 <div class="card-body">
                         <form method="post"> {% csrf_token %}
-                                <div class="col-sm-6"></div><select class="form-control" placeholder="Nombre" {{ form.empresa }}
+                                <div class="col-sm-6"></div><select class="form-control" {{ form.empresa }}
                                 <div class="form-group"></div><input class="form-control form-control-user" placeholder="Nombre" {{ form.nombre }}
                                 <div class="form-group"></div><input class="form-control form-control-user" placeholder="Descripcion" {{ form.description }}
                                 <div class="form-group"></div><input class="form-control form-control-user" placeholder="Costo" {{ form.costo }}
