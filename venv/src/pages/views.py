@@ -20,23 +20,29 @@ def home_view(request, *args, **kwargs):
     Pagina de filtros
     """
     if request.method == 'GET':
+
+
+        empresa = request.GET.get('empresa')
+        ruta = request.GET.get('ruta')
+        parada = request.GET.get('ruta')
+        if empresa is not None:
+            # si se escogio una empresa formar la ruta y devolverla
+            pass
+        elif ruta is not None:
+            # si se escogio una ruta formar la ruta y devolverla
+            pass
+        elif parada is not None:
+            # si se escogio una parada formar las ruta que pasan por la parada y devolverlas
+            pass
+        
+        # paradas = serializers.serialize("json", paradas)
+
         context = {
             "empresas": Empresa.objects.all(),
             "rutas": Ruta.objects.all(),
             "paradas": Parada.objects.all(),
         }
 
-    if request.method == 'POST':
-        if 'update_button' in request.POST:
-            form = EmpresaUpdateForm(request.POST, instance=empresa)
-            if form.is_valid():
-                empresa = form.save()
-                crear_log(request.user, "actualiza", empresa=empresa)
-                return redirect('/empresas')
-        elif 'delete_button' in request.POST:
-            Empresa.objects.get(id=empresa_id).delete()
-            return redirect('/empresas')
-    
     return render(request, "home.html", context)
 
 
