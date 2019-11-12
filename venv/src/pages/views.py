@@ -14,9 +14,31 @@ from .lib import crear_log
 from django.contrib.auth.models import User
 from django.views.generic.edit import UpdateView
 
-@login_required
+
 def home_view(request, *args, **kwargs):
-    return render(request, "home.html", {})
+    """
+    Pagina de filtros
+    """
+    if request.method == 'GET':
+        context = {
+            "empresas": Empresa.objects.all(),
+            "rutas": Ruta.objects.all(),
+            "paradas": Parada.objects.all(),
+        }
+
+    if request.method == 'POST':
+        if 'update_button' in request.POST:
+            form = EmpresaUpdateForm(request.POST, instance=empresa)
+            if form.is_valid():
+                empresa = form.save()
+                crear_log(request.user, "actualiza", empresa=empresa)
+                return redirect('/empresas')
+        elif 'delete_button' in request.POST:
+            Empresa.objects.get(id=empresa_id).delete()
+            return redirect('/empresas')
+    
+    return render(request, "home.html", context)
+
 
 @login_required
 def empresa_view(request, *args, **kwargs):
@@ -271,6 +293,10 @@ def profile_view(request, *args, **kwargs):
     }
     
     return render(request, "perfil.html", context)
+
+
+
+
 
 #---------------------------------------------------------------------------
 # Empresa

@@ -50,7 +50,45 @@
                     <div class="col-lg-4">
                         <div class="card mb-3">
                             <div class="card-body text-center shadow">
-                                INFO
+
+                                
+                                <form action="/" method="get">
+                                    Empresa
+                                    <select class="form-control" name="empresa" required="" id="id_empresa">
+                                        <option value="">---------</option>
+                                        {% for obj in empresas %} 
+                                            <option value="{{ obj.id }}"> {{ obj.nombre }}</option>
+                                        {% endfor %}
+                                    </select>
+
+                                    <button class="btn btn-primary btn-block text-white" type="submit" value="Submit">Buscar</button>
+                                </form>
+
+
+                                <form action="/" method="get">
+                                    Ruta
+                                    <select class="form-control" name="ruta" required="" id="id_ruta">
+                                        <option value="">---------</option>
+                                        {% for obj in rutas %} 
+                                            <option value="{{ obj.id }}"> {{ obj.nombre }}</option>
+                                        {% endfor %}
+                                    </select>
+                                    <button class="btn btn-primary btn-block text-white" type="submit" value="Submit">Buscar</button>
+                                </form>
+
+
+                                <form action="/" method="get">
+                                    Parada en Comun
+                                    <select class="form-control" name="parada" required="" id="id_parada">
+                                        <option value="">---------</option>
+                                        {% for obj in paradas %} 
+                                            <option value="{{ obj.id }}"> {{ obj.nombre }}</option>
+                                        {% endfor %}
+                                    </select>
+                                    <button class="btn btn-primary btn-block text-white" type="submit" value="Submit">Buscar</button>
+                                </form>
+
+
                             </div>
                         </div>
                         <div class="card shadow mb-4">
@@ -70,7 +108,16 @@
                                         <p class="text-primary m-0 font-weight-bold">Mapa</p>
                                     </div>
                                     <div class="card-body">
-                                        AQUÍ VA EL MAPA
+                                            <div id = "map" style="height: 520px;">
+                                                <script>
+                                                    var origen_latitud = 9.92981;
+                                                    var origen_longitud = -84.076;
+                                                    var map = L.map('map').setView([origen_latitud, origen_longitud], 15);
+                                                    L.tileLayer('https://api.maptiler.com/maps/streets/{z}/{x}/{y}.png?key=tctLp8XfyJogfuDP1C2H', {
+                                                        attribution: '<a href="https://www.maptiler.com/copyright/" target="_blank">&copy; MapTiler</a> <a href="https://www.openstreetmap.org/copyright" target="_blank">&copy; OpenStreetMap contributors</a>',
+                                                    }).addTo(map);
+                                                </script>
+                                            </div>
                                     </div>
                                 </div>
                             </div>

@@ -37,11 +37,14 @@
                                     <label class="form-check-label" for="exampleCheck1">Apto para sillas de ruedas</label>
                                 </div>
 
+                            
+                            {% if request.user.is_authenticated %}
                             <div class="form-group"></div>
                             <button class="form-group btn btn-primary btn-block text-white btn-user" type="submit" name='update_button'>Actualizar</button>
                             <button class="form-group btn btn-danger btn-block text-white btn-user" type="submit" name='delete_button'>Eliminar</button>
                             <!-- <a class="btn btn-danger btn-block text-white" href='/empresas'>Eliminar</a> -->
                             <hr>
+                            {% endif %} 
 
                             <!-- Error messages -->
                             {{ form.nombre.errors }}
@@ -143,8 +146,12 @@
                                         </div>
                                         <div class="card-body text-center">
                                                 <div class="radio">
-                                                    <label><input id="origen_rb_id" type="radio" name="optradio" checked>Origen</label>
-                                                    <label><input id="destino_rb_id" type="radio" name="optradio">Destino</label>
+                                                    <label><input id="origen_rb_id" type="radio" name="optradio" 
+                                                        {% if request.user.is_authenticated %} checked {% else %} hidden {% endif %}
+                                                        >Origen</label>
+                                                    <label><input id="destino_rb_id" type="radio" name="optradio"
+                                                        {% if not request.user.is_authenticated %} hidden {% endif %}
+                                                        >Destino</label>
                                                 </div>
                                             </div>
                                 </div>

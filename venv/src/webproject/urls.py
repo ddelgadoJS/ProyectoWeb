@@ -38,7 +38,7 @@ urlpatterns = [
     path('paradas/', parada_view),
     path('paradas_registrar/', parada_create_view),
     path('paradas_modificar/', parada_modify_view),
-    path('perfil/', profile_view)
+    path('perfil/', profile_view),
 ] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
 
 
