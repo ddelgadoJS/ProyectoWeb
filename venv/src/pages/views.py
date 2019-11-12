@@ -26,7 +26,7 @@ def home_view(request, *args, **kwargs):
         ruta = request.GET.get('ruta')
         parada = request.GET.get('ruta')
         if empresa is not None:
-            # si se escogio una empresa formar la ruta y devolverla
+            # si se escogio una empresa formar las ruta y devolverla
             pass
         elif ruta is not None:
             # si se escogio una ruta formar la ruta y devolverla
