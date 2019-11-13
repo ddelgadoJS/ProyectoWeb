@@ -15,20 +15,23 @@ from django.contrib.auth.models import User
 from django.views.generic.edit import UpdateView
 
 
+
+
 def home_view(request, *args, **kwargs):
     """
     Pagina de filtros
     """
     if request.method == 'GET':
 
-
-        empresa = request.GET.get('empresa')
+        rutas_empresa = []
+        empresa_id = request.GET.get('empresa')
         ruta = request.GET.get('ruta')
-        parada = request.GET.get('ruta')
-        if empresa is not None:
-            # si se escogio una empresa formar las ruta y devolverla
-            pass
-        elif ruta is not None:
+        parada = request.GET.get('parada')
+        if empresa_id is not None:
+            rutas_empresa = Ruta.objects.filter(empresa=empresa_id)
+        else:
+            empresa_id = 0
+        if ruta is not None:
             # si se escogio una ruta formar la ruta y devolverla
             pass
         elif parada is not None:
@@ -40,7 +43,9 @@ def home_view(request, *args, **kwargs):
         context = {
             "empresas": Empresa.objects.all(),
             "rutas": Ruta.objects.all(),
-            "paradas": Parada.objects.all(),
+            "rutas_empresa": serializers.serialize("json", rutas_empresa),
+            "paradas": serializers.serialize("json", Parada.objects.all()),
+            "empresa_id": int(empresa_id)
         }
 
     return render(request, "home.html", context)

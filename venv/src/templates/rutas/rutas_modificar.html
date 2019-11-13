@@ -8,6 +8,14 @@
 <li class="nav-item" role="presentation"><a class="nav-link" href='/paradas/'><i class="fas fa-map-marked-alt"></i><span>Paradas</span></a></li>
 {% endblock %}
 
+<style>
+
+.leaflet-control-container .leaflet-routing-container-hide {
+    display: none;
+}
+
+</style>
+
 {% block content_2 %}
 <div class="container-fluid">
     <h3 class="text-dark mb-4">Rutas</h3>
@@ -106,6 +114,7 @@
                                                     var markerOrigen = L.marker([origen_latitud, origen_longitud], {icon: start_icon, autoPan: true}).addTo(map).bindPopup("Origen").openPopup();
                                                     var markerDestino = L.marker([destino_latitud, destino_longitud], {icon: end_icon, autoPan: true}).addTo(map).bindPopup("Destino").openPopup();
                                                     var plotRutaCoordenadas = [[origen_latitud, origen_longitud], [destino_latitud, destino_longitud]];
+                                                    //var plotRutaCoordenadas2 = [L.latLng(origen_latitud, origen_longitud), L.latLng(destino_latitud, destino_longitud)];
 
                                                     // Adding markers to map
                                                     paradas.forEach(function(item) {
@@ -118,6 +127,13 @@
                                                     }).addTo(map);
 
                                                     var plottedPolyline = L.polyline(plotRutaCoordenadas).addTo(map);
+
+                                                    /* L.Routing.control({
+                                                        waypoints: plotRutaCoordenadas2,
+                                                        hide: false,
+                                                        waypointMode: 'snap',
+                                                        createMaker: function() {},
+                                                    }).addTo(map); */
             
                                                     function moveMarker(e){
                                                         if (document.getElementById('origen_rb_id').checked) {

@@ -57,14 +57,15 @@
                     <div class="col-lg-4">
                         <div class="card mb-3">
                             <div class="card-body text-center shadow">
-
-                                
                                 <form action="/" method="get">
                                     Empresa
                                     <select class="form-control" name="empresa" required="" id="id_empresa">
-                                        <option value="">---------</option>
                                         {% for obj in empresas %} 
-                                            <option value="{{ obj.id }}"> {{ obj.nombre }}</option>
+                                            {% if obj.id == empresa_id %}
+                                                <option value="{{ obj.id }}" selected="selected"> {{ obj.nombre }}</option>
+                                            {% else %}
+                                                <option value="{{ obj.id }}"> {{ obj.nombre }}</option>
+                                            {% endif %}
                                         {% endfor %}
                                     </select>
 
@@ -85,7 +86,7 @@
 
 
                                 <form action="/" method="get">
-                                    Parada en Comun
+                                    Parada en Común
                                     <select class="form-control" name="parada" required="" id="id_parada">
                                         <option value="">---------</option>
                                         {% for obj in paradas %} 
@@ -103,7 +104,7 @@
                                 <h6 class="text-primary font-weight-bold m-0">Bloque de información</h6>
                             </div>
                             <div class="card-body">
-                                INFO
+                                {{rutas_empresa}}
                             </div>
                         </div>
                     </div>
@@ -117,12 +118,75 @@
                                     <div class="card-body">
                                             <div id = "map" style="height: 520px;">
                                                 <script>
-                                                    var origen_latitud = 9.92981;
-                                                    var origen_longitud = -84.076;
+                                                    var origen_latitud = 9.934612211393949;
+                                                    var origen_longitud = -84.08498480136649;
+
+                                                    start_icon = L.icon({
+                                                        iconUrl: 'https://www.mapquestapi.com/staticmap/geticon?uri=poi-red_1.png',
+                                                        iconSize: [20, 29],
+                                                        iconAnchor: [10, 29],
+                                                        popupAnchor: [0, -29]
+                                                    });
+
+                                                    parada_icon = L.icon({
+                                                        iconUrl: 'https://www.mapquestapi.com/staticmap/geticon?uri=poi-orange_1.png',
+                                                        iconSize: [20, 29],
+                                                        iconAnchor: [10, 29],
+                                                        popupAnchor: [0, -29]
+                                                    });
+                                                    
+                                                    end_icon = L.icon({
+                                                        iconUrl: 'https://www.mapquestapi.com/staticmap/geticon?uri=poi-blue_1.png',
+                                                        iconSize: [20, 29],
+                                                        iconAnchor: [10, 29],
+                                                        popupAnchor: [0, -29]
+                                                    });
+                                                    
+                                                    var rutas_empresa = JSON.parse(("{{rutas_empresa}}").replace(/&(l|g|quo)t;/g, function(a,b){
+                                                        return {
+                                                            l   : '<',
+                                                            g   : '>',
+                                                            quo : '"'
+                                                        }[b];
+                                                    }));
+
+                                                    var paradas = JSON.parse(("{{paradas}}").replace(/&(l|g|quo)t;/g, function(a,b){
+                                                        return {
+                                                            l   : '<',
+                                                            g   : '>',
+                                                            quo : '"'
+                                                        }[b];
+                                                    }));
+
                                                     var map = L.map('map').setView([origen_latitud, origen_longitud], 15);
+                                                    var plotRutaCoordenadas = [];
+
+                                                    // Adding markers to map
+                                                    rutas_empresa.forEach(function(ruta) {
+                                                        L.marker([ruta.fields.origen_latitud, ruta.fields.origen_longitud], {icon: start_icon}).addTo(map).bindPopup(ruta.fields.nombre).openPopup();
+                                                        L.marker([ruta.fields.destino_latitud, ruta.fields.destino_longitud], {icon: end_icon}).addTo(map).bindPopup(ruta.fields.nombre).openPopup();
+                                                        plotRutaCoordenadas.push([ruta.fields.origen_latitud, ruta.fields.origen_longitud]);
+                                                        plotRutaCoordenadas.push([ruta.fields.destino_latitud, ruta.fields.destino_longitud]);
+                                                        // For bus stops
+                                                        paradas.forEach(function(parada) {
+                                                            if (parada.fields.ruta ==  ruta.pk) {
+                                                                L.marker([parada.fields.latitud, parada.fields.longitud], {icon: parada_icon}).addTo(map).bindPopup(parada.fields.nombre).openPopup();
+                                                                plotRutaCoordenadas.splice(-1, 0, [parada.fields.latitud, parada.fields.longitud]);
+                                                            }
+                                                        });
+                                                        var color;
+                                                        var r = Math.floor(Math.random() * 255);
+                                                        var g = Math.floor(Math.random() * 255);
+                                                        var b = Math.floor(Math.random() * 255);
+                                                        color= "rgb("+r+" ,"+g+","+ b+")"; 
+                                                        L.polyline(plotRutaCoordenadas, {color: color}).addTo(map);
+                                                        plotRutaCoordenadas = [];
+                                                    });
+
                                                     L.tileLayer('https://api.maptiler.com/maps/streets/{z}/{x}/{y}.png?key=tctLp8XfyJogfuDP1C2H', {
                                                         attribution: '<a href="https://www.maptiler.com/copyright/" target="_blank">&copy; MapTiler</a> <a href="https://www.openstreetmap.org/copyright" target="_blank">&copy; OpenStreetMap contributors</a>',
                                                     }).addTo(map);
+
                                                 </script>
                                             </div>
                                     </div>
