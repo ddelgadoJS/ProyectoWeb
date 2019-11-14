@@ -156,168 +156,78 @@
                                                         iconAnchor: [10, 29],
                                                         popupAnchor: [0, -29]
                                                     });
-
-                                                    if ("{{consulta}}" == 1) {
-                                                        var plotRutaCoordenadas = [];
-
-                                                        var rutas_empresa = JSON.parse(("{{rutas_empresa}}").replace(/&(l|g|quo)t;/g, function(a,b){
+													
+													var rutas;
+													var paradas;
+													var plotRutaCoordenadas = [];
+													
+                                                    if ("{{consulta}}" == 1)
+														rutas = consultaRuta("{{rutas_empresa}}");
+													else if("{{consulta}}" == 2)
+                                                        rutas = consultaRuta("{{ruta}}");
+													else if ("{{consulta}}" == 3)
+                                                        rutas = consultaRuta("{{rutas_destino}}");
+													else if ("{{consulta}}" == 4)
+                                                        rutas = consultaRuta("{{rutas_parada}}");
+														
+													paradas = consultaRuta("{{paradas}}");
+													// Adding markers to map
+													rutas.forEach(function(ruta) {
+														L.marker([ruta.fields.origen_latitud, ruta.fields.origen_longitud], {icon: start_icon}).addTo(map).bindPopup(ruta.fields.nombre).openPopup();
+														L.marker([ruta.fields.destino_latitud, ruta.fields.destino_longitud], {icon: end_icon}).addTo(map).bindPopup(ruta.fields.nombre).openPopup();
+														plotRutaCoordenadas.push([ruta.fields.origen_latitud, ruta.fields.origen_longitud]);
+														plotRutaCoordenadas.push([ruta.fields.destino_latitud, ruta.fields.destino_longitud]);
+														
+														var costo = ruta.fields.costo;
+														//var numero = ruta.fields.costo;
+														// For bus stops
+														paradas.forEach(function(parada) {
+															if (parada.fields.ruta ==  ruta.pk) {
+																L.marker([parada.fields.latitud, parada.fields.longitud], {icon: parada_icon}).addTo(map).bindPopup(parada.fields.nombre+"<br>"+parada.fields.description+"<br>Costo: "+costo+"<br>Ruta: "+ruta.fields.nombre).openPopup();
+																plotRutaCoordenadas.splice(-1, 0, [parada.fields.latitud, parada.fields.longitud]);
+															}
+														});
+														
+														createRoute(plotRutaCoordenadas);
+														
+														plotRutaCoordenadas = [];
+													});
+                                                    
+													function createRoute(ruta){
+														var color;
+                                                        var r = Math.floor(Math.random() * 150 + 50)-50;
+                                                        var g = Math.floor(Math.random() * 150 + 50)-50;
+                                                        var b = Math.floor(Math.random() * 150 + 50)-50;
+														r = (r).toString(16);
+														g = (g).toString(16);
+														b = (b).toString(16);
+														colorHex = "#"+r+g+b;														
+														
+														L.Routing.control({
+															  waypoints: ruta,
+															  collapsible: true,
+															  waypointMode: "connected",
+															  addWaypoints: false,
+															  draggableWaypoints: false,
+															  createMarker: function() { return null; },
+															  lineOptions:{
+																styles: [
+																	{color:colorHex}
+																	]
+															  }
+															}).addTo(map);
+														document.getElementById('map').children[2].children[1].style="display:none;";
+													}
+													
+													function consultaRuta(tabla){
+														return JSON.parse((tabla).replace(/&(l|g|quo)t;/g, function(a,b){
                                                             return {
                                                                 l   : '<',
                                                                 g   : '>',
                                                                 quo : '"'
                                                             }[b];
                                                         }));
-
-                                                        var paradas = JSON.parse(("{{paradas}}").replace(/&(l|g|quo)t;/g, function(a,b){
-                                                            return {
-                                                                l   : '<',
-                                                                g   : '>',
-                                                                quo : '"'
-                                                            }[b];
-                                                        }));
-
-                                                        // Adding markers to map
-                                                        rutas_empresa.forEach(function(ruta) {
-                                                            L.marker([ruta.fields.origen_latitud, ruta.fields.origen_longitud], {icon: start_icon}).addTo(map).bindPopup(ruta.fields.nombre).openPopup();
-                                                            L.marker([ruta.fields.destino_latitud, ruta.fields.destino_longitud], {icon: end_icon}).addTo(map).bindPopup(ruta.fields.nombre).openPopup();
-                                                            plotRutaCoordenadas.push([ruta.fields.origen_latitud, ruta.fields.origen_longitud]);
-                                                            plotRutaCoordenadas.push([ruta.fields.destino_latitud, ruta.fields.destino_longitud]);
-                                                            // For bus stops
-                                                            paradas.forEach(function(parada) {
-                                                                if (parada.fields.ruta ==  ruta.pk) {
-                                                                    L.marker([parada.fields.latitud, parada.fields.longitud], {icon: parada_icon}).addTo(map).bindPopup(parada.fields.nombre).openPopup();
-                                                                    plotRutaCoordenadas.splice(-1, 0, [parada.fields.latitud, parada.fields.longitud]);
-                                                                }
-                                                            });
-                                                            var color;
-                                                            var r = Math.floor(Math.random() * 255);
-                                                            var g = Math.floor(Math.random() * 255);
-                                                            var b = Math.floor(Math.random() * 255);
-                                                            color= "rgb("+r+" ,"+g+","+ b+")"; 
-                                                            L.polyline(plotRutaCoordenadas, {color: color}).addTo(map);
-                                                            plotRutaCoordenadas = [];
-                                                        });
-                                                    } else if ("{{consulta}}" == 2) {
-                                                        var plotRutaCoordenadas = [];
-
-                                                        var ruta_ = JSON.parse(("{{ruta}}").replace(/&(l|g|quo)t;/g, function(a,b){
-                                                            return {
-                                                                l   : '<',
-                                                                g   : '>',
-                                                                quo : '"'
-                                                            }[b];
-                                                        }));
-
-                                                        var paradas = JSON.parse(("{{paradas}}").replace(/&(l|g|quo)t;/g, function(a,b){
-                                                            return {
-                                                                l   : '<',
-                                                                g   : '>',
-                                                                quo : '"'
-                                                            }[b];
-                                                        }));
-
-                                                        // Adding markers to map
-                                                        ruta_.forEach(function(ruta) {
-                                                            L.marker([ruta.fields.origen_latitud, ruta.fields.origen_longitud], {icon: start_icon}).addTo(map).bindPopup(ruta.fields.nombre).openPopup();
-                                                            L.marker([ruta.fields.destino_latitud, ruta.fields.destino_longitud], {icon: end_icon}).addTo(map).bindPopup(ruta.fields.nombre).openPopup();
-                                                            plotRutaCoordenadas.push([ruta.fields.origen_latitud, ruta.fields.origen_longitud]);
-                                                            plotRutaCoordenadas.push([ruta.fields.destino_latitud, ruta.fields.destino_longitud]);
-                                                            // For bus stops
-                                                            paradas.forEach(function(parada) {
-                                                                if (parada.fields.ruta ==  ruta.pk) {
-                                                                    L.marker([parada.fields.latitud, parada.fields.longitud], {icon: parada_icon}).addTo(map).bindPopup(parada.fields.nombre).openPopup();
-                                                                    plotRutaCoordenadas.splice(-1, 0, [parada.fields.latitud, parada.fields.longitud]);
-                                                                }
-                                                            });
-                                                            var color;
-                                                            var r = Math.floor(Math.random() * 255);
-                                                            var g = Math.floor(Math.random() * 255);
-                                                            var b = Math.floor(Math.random() * 255);
-                                                            color= "rgb("+r+" ,"+g+","+ b+")"; 
-                                                            L.polyline(plotRutaCoordenadas, {color: color}).addTo(map);
-                                                            plotRutaCoordenadas = [];
-                                                        });
-                                                    } else if ("{{consulta}}" == 3) {
-                                                        var plotRutaCoordenadas = [];
-
-                                                        var rutas_destino = JSON.parse(("{{rutas_destino}}").replace(/&(l|g|quo)t;/g, function(a,b){
-                                                            return {
-                                                                l   : '<',
-                                                                g   : '>',
-                                                                quo : '"'
-                                                            }[b];
-                                                        }));
-
-                                                        var paradas = JSON.parse(("{{paradas}}").replace(/&(l|g|quo)t;/g, function(a,b){
-                                                            return {
-                                                                l   : '<',
-                                                                g   : '>',
-                                                                quo : '"'
-                                                            }[b];
-                                                        }));
-
-                                                        // Adding markers to map
-                                                        rutas_destino.forEach(function(ruta) {
-                                                            L.marker([ruta.fields.origen_latitud, ruta.fields.origen_longitud], {icon: start_icon}).addTo(map).bindPopup(ruta.fields.nombre).openPopup();
-                                                            L.marker([ruta.fields.destino_latitud, ruta.fields.destino_longitud], {icon: end_icon}).addTo(map).bindPopup(ruta.fields.nombre).openPopup();
-                                                            plotRutaCoordenadas.push([ruta.fields.origen_latitud, ruta.fields.origen_longitud]);
-                                                            plotRutaCoordenadas.push([ruta.fields.destino_latitud, ruta.fields.destino_longitud]);
-                                                            // For bus stops
-                                                            paradas.forEach(function(parada) {
-                                                                if (parada.fields.ruta ==  ruta.pk) {
-                                                                    L.marker([parada.fields.latitud, parada.fields.longitud], {icon: parada_icon}).addTo(map).bindPopup(parada.fields.nombre).openPopup();
-                                                                    plotRutaCoordenadas.splice(-1, 0, [parada.fields.latitud, parada.fields.longitud]);
-                                                                }
-                                                            });
-                                                            var color;
-                                                            var r = Math.floor(Math.random() * 255);
-                                                            var g = Math.floor(Math.random() * 255);
-                                                            var b = Math.floor(Math.random() * 255);
-                                                            color= "rgb("+r+" ,"+g+","+ b+")"; 
-                                                            L.polyline(plotRutaCoordenadas, {color: color}).addTo(map);
-                                                            plotRutaCoordenadas = [];
-                                                        });
-                                                    } else if ("{{consulta}}" == 4) {
-                                                        var plotRutaCoordenadas = [];
-
-                                                        var rutas_parada = JSON.parse(("{{rutas_parada}}").replace(/&(l|g|quo)t;/g, function(a,b){
-                                                            return {
-                                                                l   : '<',
-                                                                g   : '>',
-                                                                quo : '"'
-                                                            }[b];
-                                                        }));
-
-                                                        var paradas = JSON.parse(("{{paradas}}").replace(/&(l|g|quo)t;/g, function(a,b){
-                                                            return {
-                                                                l   : '<',
-                                                                g   : '>',
-                                                                quo : '"'
-                                                            }[b];
-                                                        }));
-
-                                                        // Adding markers to map
-                                                        rutas_parada.forEach(function(ruta) {
-                                                            L.marker([ruta.fields.origen_latitud, ruta.fields.origen_longitud], {icon: start_icon}).addTo(map).bindPopup(ruta.fields.nombre).openPopup();
-                                                            L.marker([ruta.fields.destino_latitud, ruta.fields.destino_longitud], {icon: end_icon}).addTo(map).bindPopup(ruta.fields.nombre).openPopup();
-                                                            plotRutaCoordenadas.push([ruta.fields.origen_latitud, ruta.fields.origen_longitud]);
-                                                            plotRutaCoordenadas.push([ruta.fields.destino_latitud, ruta.fields.destino_longitud]);
-                                                            // For bus stops
-                                                            paradas.forEach(function(parada) {
-                                                                if (parada.fields.ruta ==  ruta.pk) {
-                                                                    L.marker([parada.fields.latitud, parada.fields.longitud], {icon: parada_icon}).addTo(map).bindPopup(parada.fields.nombre).openPopup();
-                                                                    plotRutaCoordenadas.splice(-1, 0, [parada.fields.latitud, parada.fields.longitud]);
-                                                                }
-                                                            });
-                                                            var color;
-                                                            var r = Math.floor(Math.random() * 255);
-                                                            var g = Math.floor(Math.random() * 255);
-                                                            var b = Math.floor(Math.random() * 255);
-                                                            color= "rgb("+r+" ,"+g+","+ b+")"; 
-                                                            L.polyline(plotRutaCoordenadas, {color: color}).addTo(map);
-                                                            plotRutaCoordenadas = [];
-                                                        });
-                                                    }
+													}
                                                 </script>
                                             </div>
                                     </div>
