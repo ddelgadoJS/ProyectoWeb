@@ -14,38 +14,71 @@ from .lib import crear_log
 from django.contrib.auth.models import User
 from django.views.generic.edit import UpdateView
 
+def aux_get_paradas_unicas(paradas):
+    paradas_unicas = []
+    query_set = []
+    for parada in paradas:
+        if parada.nombre not in paradas_unicas:
+            paradas_unicas.append(parada.nombre)
+            query_set.append(parada)
+    
+    return query_set
 
-
+def aux_get_destinos_unicos(rutas):
+    destinos_unicos = []
+    query_set = []
+    for ruta in rutas:
+        if ruta.nombre_destino not in destinos_unicos:
+            destinos_unicos.append(ruta.nombre_destino)
+            query_set.append(ruta)
+    
+    return query_set
 
 def home_view(request, *args, **kwargs):
     """
     Pagina de filtros
     """
     if request.method == 'GET':
-
+        consulta = 0
         rutas_empresa = []
-        empresa_id = request.GET.get('empresa')
-        ruta = request.GET.get('ruta')
-        parada = request.GET.get('parada')
-        if empresa_id is not None:
-            rutas_empresa = Ruta.objects.filter(empresa=empresa_id)
-        else:
-            empresa_id = 0
-        if ruta is not None:
-            # si se escogio una ruta formar la ruta y devolverla
-            pass
-        elif parada is not None:
-            # si se escogio una parada formar las ruta que pasan por la parada y devolverlas
-            pass
-        
-        # paradas = serializers.serialize("json", paradas)
+        rutas_parada = []
+        rutas_destino = []
+        empresa_id = 0
+        ruta = ''
+        if request.GET.get('empresa') is not None:
+            consulta = 1
+            rutas_empresa = Ruta.objects.filter(empresa=request.GET.get('empresa'))
 
+        elif request.GET.get('ruta') is not None:
+            consulta = 2
+            ruta = serializers.serialize("json", Ruta.objects.filter(id=request.GET.get('ruta')))
+
+        elif request.GET.get('destino') is not None:
+            consulta = 3
+            for ruta in Ruta.objects.filter(nombre_destino=request.GET.get('destino')):
+                rutas_destino.append(Ruta.objects.get(id=ruta.id))
+
+            rutas_destino = serializers.serialize("json", rutas_destino)
+
+        elif request.GET.get('parada') is not None:
+            consulta = 4
+            for parada in Parada.objects.filter(nombre=request.GET.get('parada')):
+                rutas_parada.append(Ruta.objects.get(id=parada.ruta.id))
+
+            rutas_parada = serializers.serialize("json", rutas_parada)
+        
         context = {
+            "consulta": consulta,
             "empresas": Empresa.objects.all(),
             "rutas": Ruta.objects.all(),
             "rutas_empresa": serializers.serialize("json", rutas_empresa),
+            "paradas_all": aux_get_paradas_unicas(Parada.objects.all()),
             "paradas": serializers.serialize("json", Parada.objects.all()),
-            "empresa_id": int(empresa_id)
+            "destinos_all": aux_get_destinos_unicos(Ruta.objects.all()),
+            "empresa_id": int(empresa_id),
+            "ruta": ruta,
+            "rutas_parada": rutas_parada,
+            "rutas_destino": rutas_destino,
         }
 
     return render(request, "home.html", context)

@@ -60,6 +60,7 @@
                                 <form action="/" method="get">
                                     Empresa
                                     <select class="form-control" name="empresa" required="" id="id_empresa">
+                                        <option value="">---------</option>
                                         {% for obj in empresas %} 
                                             {% if obj.id == empresa_id %}
                                                 <option value="{{ obj.id }}" selected="selected"> {{ obj.nombre }}</option>
@@ -72,7 +73,6 @@
                                     <button class="btn btn-primary btn-block text-white" type="submit" value="Submit">Buscar</button>
                                 </form>
 
-
                                 <form action="/" method="get">
                                     Ruta
                                     <select class="form-control" name="ruta" required="" id="id_ruta">
@@ -84,29 +84,38 @@
                                     <button class="btn btn-primary btn-block text-white" type="submit" value="Submit">Buscar</button>
                                 </form>
 
-
                                 <form action="/" method="get">
-                                    Parada en Común
-                                    <select class="form-control" name="parada" required="" id="id_parada">
+                                    Destino en Común
+                                    <select class="form-control" name="destino" required="" id="id_destino">
                                         <option value="">---------</option>
-                                        {% for obj in paradas %} 
-                                            <option value="{{ obj.id }}"> {{ obj.nombre }}</option>
+                                        {% for obj in destinos_all %}
+                                            <option value="{{ obj.nombre_destino }}"> {{ obj.nombre_destino }}</option>
                                         {% endfor %}
                                     </select>
                                     <button class="btn btn-primary btn-block text-white" type="submit" value="Submit">Buscar</button>
                                 </form>
 
+                                <form action="/" method="get">
+                                    Parada en Común
+                                    <select class="form-control" name="parada" required="" id="id_parada">
+                                        <option value="">---------</option>
+                                        {% for obj in paradas_all %}
+                                            <option value="{{ obj.nombre }}"> {{ obj.nombre }}</option>
+                                        {% endfor %}
+                                    </select>
+                                    <button class="btn btn-primary btn-block text-white" type="submit" value="Submit">Buscar</button>
+                                </form>
 
                             </div>
                         </div>
-                        <div class="card shadow mb-4">
+                        <!-- <div class="card shadow mb-4">
                             <div class="card-header py-3">
                                 <h6 class="text-primary font-weight-bold m-0">Bloque de información</h6>
                             </div>
                             <div class="card-body">
-                                {{rutas_empresa}}
+                                {{rutas_destino}}
                             </div>
-                        </div>
+                        </div> -->
                     </div>
                     <div class="col-lg-8">
                         <div class="row">
@@ -120,6 +129,12 @@
                                                 <script>
                                                     var origen_latitud = 9.934612211393949;
                                                     var origen_longitud = -84.08498480136649;
+
+                                                    var map = L.map('map').setView([origen_latitud, origen_longitud], 15);
+
+                                                    L.tileLayer('https://api.maptiler.com/maps/streets/{z}/{x}/{y}.png?key=tctLp8XfyJogfuDP1C2H', {
+                                                        attribution: '<a href="https://www.maptiler.com/copyright/" target="_blank">&copy; MapTiler</a> <a href="https://www.openstreetmap.org/copyright" target="_blank">&copy; OpenStreetMap contributors</a>',
+                                                    }).addTo(map);
 
                                                     start_icon = L.icon({
                                                         iconUrl: 'https://www.mapquestapi.com/staticmap/geticon?uri=poi-red_1.png',
@@ -141,52 +156,168 @@
                                                         iconAnchor: [10, 29],
                                                         popupAnchor: [0, -29]
                                                     });
-                                                    
-                                                    var rutas_empresa = JSON.parse(("{{rutas_empresa}}").replace(/&(l|g|quo)t;/g, function(a,b){
-                                                        return {
-                                                            l   : '<',
-                                                            g   : '>',
-                                                            quo : '"'
-                                                        }[b];
-                                                    }));
 
-                                                    var paradas = JSON.parse(("{{paradas}}").replace(/&(l|g|quo)t;/g, function(a,b){
-                                                        return {
-                                                            l   : '<',
-                                                            g   : '>',
-                                                            quo : '"'
-                                                        }[b];
-                                                    }));
+                                                    if ("{{consulta}}" == 1) {
+                                                        var plotRutaCoordenadas = [];
 
-                                                    var map = L.map('map').setView([origen_latitud, origen_longitud], 15);
-                                                    var plotRutaCoordenadas = [];
+                                                        var rutas_empresa = JSON.parse(("{{rutas_empresa}}").replace(/&(l|g|quo)t;/g, function(a,b){
+                                                            return {
+                                                                l   : '<',
+                                                                g   : '>',
+                                                                quo : '"'
+                                                            }[b];
+                                                        }));
 
-                                                    // Adding markers to map
-                                                    rutas_empresa.forEach(function(ruta) {
-                                                        L.marker([ruta.fields.origen_latitud, ruta.fields.origen_longitud], {icon: start_icon}).addTo(map).bindPopup(ruta.fields.nombre).openPopup();
-                                                        L.marker([ruta.fields.destino_latitud, ruta.fields.destino_longitud], {icon: end_icon}).addTo(map).bindPopup(ruta.fields.nombre).openPopup();
-                                                        plotRutaCoordenadas.push([ruta.fields.origen_latitud, ruta.fields.origen_longitud]);
-                                                        plotRutaCoordenadas.push([ruta.fields.destino_latitud, ruta.fields.destino_longitud]);
-                                                        // For bus stops
-                                                        paradas.forEach(function(parada) {
-                                                            if (parada.fields.ruta ==  ruta.pk) {
-                                                                L.marker([parada.fields.latitud, parada.fields.longitud], {icon: parada_icon}).addTo(map).bindPopup(parada.fields.nombre).openPopup();
-                                                                plotRutaCoordenadas.splice(-1, 0, [parada.fields.latitud, parada.fields.longitud]);
-                                                            }
+                                                        var paradas = JSON.parse(("{{paradas}}").replace(/&(l|g|quo)t;/g, function(a,b){
+                                                            return {
+                                                                l   : '<',
+                                                                g   : '>',
+                                                                quo : '"'
+                                                            }[b];
+                                                        }));
+
+                                                        // Adding markers to map
+                                                        rutas_empresa.forEach(function(ruta) {
+                                                            L.marker([ruta.fields.origen_latitud, ruta.fields.origen_longitud], {icon: start_icon}).addTo(map).bindPopup(ruta.fields.nombre).openPopup();
+                                                            L.marker([ruta.fields.destino_latitud, ruta.fields.destino_longitud], {icon: end_icon}).addTo(map).bindPopup(ruta.fields.nombre).openPopup();
+                                                            plotRutaCoordenadas.push([ruta.fields.origen_latitud, ruta.fields.origen_longitud]);
+                                                            plotRutaCoordenadas.push([ruta.fields.destino_latitud, ruta.fields.destino_longitud]);
+                                                            // For bus stops
+                                                            paradas.forEach(function(parada) {
+                                                                if (parada.fields.ruta ==  ruta.pk) {
+                                                                    L.marker([parada.fields.latitud, parada.fields.longitud], {icon: parada_icon}).addTo(map).bindPopup(parada.fields.nombre).openPopup();
+                                                                    plotRutaCoordenadas.splice(-1, 0, [parada.fields.latitud, parada.fields.longitud]);
+                                                                }
+                                                            });
+                                                            var color;
+                                                            var r = Math.floor(Math.random() * 255);
+                                                            var g = Math.floor(Math.random() * 255);
+                                                            var b = Math.floor(Math.random() * 255);
+                                                            color= "rgb("+r+" ,"+g+","+ b+")"; 
+                                                            L.polyline(plotRutaCoordenadas, {color: color}).addTo(map);
+                                                            plotRutaCoordenadas = [];
                                                         });
-                                                        var color;
-                                                        var r = Math.floor(Math.random() * 255);
-                                                        var g = Math.floor(Math.random() * 255);
-                                                        var b = Math.floor(Math.random() * 255);
-                                                        color= "rgb("+r+" ,"+g+","+ b+")"; 
-                                                        L.polyline(plotRutaCoordenadas, {color: color}).addTo(map);
-                                                        plotRutaCoordenadas = [];
-                                                    });
+                                                    } else if ("{{consulta}}" == 2) {
+                                                        var plotRutaCoordenadas = [];
 
-                                                    L.tileLayer('https://api.maptiler.com/maps/streets/{z}/{x}/{y}.png?key=tctLp8XfyJogfuDP1C2H', {
-                                                        attribution: '<a href="https://www.maptiler.com/copyright/" target="_blank">&copy; MapTiler</a> <a href="https://www.openstreetmap.org/copyright" target="_blank">&copy; OpenStreetMap contributors</a>',
-                                                    }).addTo(map);
+                                                        var ruta_ = JSON.parse(("{{ruta}}").replace(/&(l|g|quo)t;/g, function(a,b){
+                                                            return {
+                                                                l   : '<',
+                                                                g   : '>',
+                                                                quo : '"'
+                                                            }[b];
+                                                        }));
 
+                                                        var paradas = JSON.parse(("{{paradas}}").replace(/&(l|g|quo)t;/g, function(a,b){
+                                                            return {
+                                                                l   : '<',
+                                                                g   : '>',
+                                                                quo : '"'
+                                                            }[b];
+                                                        }));
+
+                                                        // Adding markers to map
+                                                        ruta_.forEach(function(ruta) {
+                                                            L.marker([ruta.fields.origen_latitud, ruta.fields.origen_longitud], {icon: start_icon}).addTo(map).bindPopup(ruta.fields.nombre).openPopup();
+                                                            L.marker([ruta.fields.destino_latitud, ruta.fields.destino_longitud], {icon: end_icon}).addTo(map).bindPopup(ruta.fields.nombre).openPopup();
+                                                            plotRutaCoordenadas.push([ruta.fields.origen_latitud, ruta.fields.origen_longitud]);
+                                                            plotRutaCoordenadas.push([ruta.fields.destino_latitud, ruta.fields.destino_longitud]);
+                                                            // For bus stops
+                                                            paradas.forEach(function(parada) {
+                                                                if (parada.fields.ruta ==  ruta.pk) {
+                                                                    L.marker([parada.fields.latitud, parada.fields.longitud], {icon: parada_icon}).addTo(map).bindPopup(parada.fields.nombre).openPopup();
+                                                                    plotRutaCoordenadas.splice(-1, 0, [parada.fields.latitud, parada.fields.longitud]);
+                                                                }
+                                                            });
+                                                            var color;
+                                                            var r = Math.floor(Math.random() * 255);
+                                                            var g = Math.floor(Math.random() * 255);
+                                                            var b = Math.floor(Math.random() * 255);
+                                                            color= "rgb("+r+" ,"+g+","+ b+")"; 
+                                                            L.polyline(plotRutaCoordenadas, {color: color}).addTo(map);
+                                                            plotRutaCoordenadas = [];
+                                                        });
+                                                    } else if ("{{consulta}}" == 3) {
+                                                        var plotRutaCoordenadas = [];
+
+                                                        var rutas_destino = JSON.parse(("{{rutas_destino}}").replace(/&(l|g|quo)t;/g, function(a,b){
+                                                            return {
+                                                                l   : '<',
+                                                                g   : '>',
+                                                                quo : '"'
+                                                            }[b];
+                                                        }));
+
+                                                        var paradas = JSON.parse(("{{paradas}}").replace(/&(l|g|quo)t;/g, function(a,b){
+                                                            return {
+                                                                l   : '<',
+                                                                g   : '>',
+                                                                quo : '"'
+                                                            }[b];
+                                                        }));
+
+                                                        // Adding markers to map
+                                                        rutas_destino.forEach(function(ruta) {
+                                                            L.marker([ruta.fields.origen_latitud, ruta.fields.origen_longitud], {icon: start_icon}).addTo(map).bindPopup(ruta.fields.nombre).openPopup();
+                                                            L.marker([ruta.fields.destino_latitud, ruta.fields.destino_longitud], {icon: end_icon}).addTo(map).bindPopup(ruta.fields.nombre).openPopup();
+                                                            plotRutaCoordenadas.push([ruta.fields.origen_latitud, ruta.fields.origen_longitud]);
+                                                            plotRutaCoordenadas.push([ruta.fields.destino_latitud, ruta.fields.destino_longitud]);
+                                                            // For bus stops
+                                                            paradas.forEach(function(parada) {
+                                                                if (parada.fields.ruta ==  ruta.pk) {
+                                                                    L.marker([parada.fields.latitud, parada.fields.longitud], {icon: parada_icon}).addTo(map).bindPopup(parada.fields.nombre).openPopup();
+                                                                    plotRutaCoordenadas.splice(-1, 0, [parada.fields.latitud, parada.fields.longitud]);
+                                                                }
+                                                            });
+                                                            var color;
+                                                            var r = Math.floor(Math.random() * 255);
+                                                            var g = Math.floor(Math.random() * 255);
+                                                            var b = Math.floor(Math.random() * 255);
+                                                            color= "rgb("+r+" ,"+g+","+ b+")"; 
+                                                            L.polyline(plotRutaCoordenadas, {color: color}).addTo(map);
+                                                            plotRutaCoordenadas = [];
+                                                        });
+                                                    } else if ("{{consulta}}" == 4) {
+                                                        var plotRutaCoordenadas = [];
+
+                                                        var rutas_parada = JSON.parse(("{{rutas_parada}}").replace(/&(l|g|quo)t;/g, function(a,b){
+                                                            return {
+                                                                l   : '<',
+                                                                g   : '>',
+                                                                quo : '"'
+                                                            }[b];
+                                                        }));
+
+                                                        var paradas = JSON.parse(("{{paradas}}").replace(/&(l|g|quo)t;/g, function(a,b){
+                                                            return {
+                                                                l   : '<',
+                                                                g   : '>',
+                                                                quo : '"'
+                                                            }[b];
+                                                        }));
+
+                                                        // Adding markers to map
+                                                        rutas_parada.forEach(function(ruta) {
+                                                            L.marker([ruta.fields.origen_latitud, ruta.fields.origen_longitud], {icon: start_icon}).addTo(map).bindPopup(ruta.fields.nombre).openPopup();
+                                                            L.marker([ruta.fields.destino_latitud, ruta.fields.destino_longitud], {icon: end_icon}).addTo(map).bindPopup(ruta.fields.nombre).openPopup();
+                                                            plotRutaCoordenadas.push([ruta.fields.origen_latitud, ruta.fields.origen_longitud]);
+                                                            plotRutaCoordenadas.push([ruta.fields.destino_latitud, ruta.fields.destino_longitud]);
+                                                            // For bus stops
+                                                            paradas.forEach(function(parada) {
+                                                                if (parada.fields.ruta ==  ruta.pk) {
+                                                                    L.marker([parada.fields.latitud, parada.fields.longitud], {icon: parada_icon}).addTo(map).bindPopup(parada.fields.nombre).openPopup();
+                                                                    plotRutaCoordenadas.splice(-1, 0, [parada.fields.latitud, parada.fields.longitud]);
+                                                                }
+                                                            });
+                                                            var color;
+                                                            var r = Math.floor(Math.random() * 255);
+                                                            var g = Math.floor(Math.random() * 255);
+                                                            var b = Math.floor(Math.random() * 255);
+                                                            color= "rgb("+r+" ,"+g+","+ b+")"; 
+                                                            L.polyline(plotRutaCoordenadas, {color: color}).addTo(map);
+                                                            plotRutaCoordenadas = [];
+                                                        });
+                                                    }
                                                 </script>
                                             </div>
                                     </div>

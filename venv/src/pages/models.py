@@ -34,6 +34,7 @@ class Ruta(models.Model):
     empresa = models.ForeignKey(Empresa, on_delete=models.CASCADE)
 
     nombre = models.CharField(max_length=10000, unique=True)
+    nombre_destino = models.CharField(max_length=10000)
     description = models.CharField(max_length=10000)
     costo = models.FloatField()
     horario = models.CharField(max_length=10000)
@@ -59,7 +60,7 @@ class Parada(models.Model):
 
     ruta = models.ForeignKey(Ruta, on_delete=models.CASCADE)
 
-    nombre = models.CharField(max_length=10000, unique=True)
+    nombre = models.CharField(max_length=10000, unique=False)
     description = models.CharField(max_length=10000)
     horario = models.CharField(max_length=10000)
     latitud = models.FloatField()
