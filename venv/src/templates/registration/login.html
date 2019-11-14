@@ -27,8 +27,9 @@
                                     <form action="{% url 'login' %}" class="user" method="post"> {% csrf_token %}
                                         <div class="form-group"><input class="form-control form-control-user" placeholder="Usuario" {{ form.username }} </div>
                                         <div class="form-group"><input class="form-control form-control-user" placeholder="Contraseña" {{ form.password }} </div>
-                                        <div class="form-group row">
-                                            </div><button class="btn btn-primary btn-block text-white btn-user" type="submit">Login</button>
+                                        <div class="form-group row"></div>
+                                        <button class="btn btn-primary btn-block text-white btn-user" type="submit">Login</button>
+                                        <a class="btn btn-primary btn-block text-white btn-user" href="/">Entrar como Guest</a>
                                         <hr>
                                     </form>
 

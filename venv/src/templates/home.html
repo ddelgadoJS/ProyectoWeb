@@ -32,8 +32,14 @@
                             <li class="nav-item dropdown no-arrow" role="presentation">
                                 <div class="nav-item dropdown no-arrow">
                                     <a class="dropdown-toggle nav-link" data-toggle="dropdown" aria-expanded="false" href="#">
-                                        <span class="d-none d-lg-inline mr-2 text-gray-600 small">{{ request.user.get_full_name }}</span>
+
+                                    {% if request.user.is_authenticated %}
+                                        <span class="d-none d-lg-inline mr-2 text-gray-600 small">Bienvenido! {{ user.get_username }}</span>
                                         <img class="border rounded-circle img-profile" src='{% static "assets/img/avatars/avatar1.jpeg"%}'>
+                                    {% else %}
+                                        <span class="d-none d-lg-inline mr-2 text-gray-600 small">Bienvenido! Guest</span>
+                                        <img class="border rounded-circle img-profile" src='{% static "assets/img/avatars/avatar1.jpeg"%}'>
+                                    {% endif %} 
                                     </a>
                                     <div class="dropdown-menu shadow dropdown-menu-right animated--grow-in" role="menu">
                                     <a class="dropdown-item" role="presentation" href="/perfil/"><i class="fas fa-user fa-sm fa-fw mr-2 text-gray-400"></i>&nbsp;Perfil</a>
