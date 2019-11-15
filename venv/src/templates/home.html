@@ -132,36 +132,12 @@
                                     </div>
                                     <div class="card-body">
                                             <div id = "map" style="height: 520px;">
+												<script src="{% static 'mapping.js' %}"></script>
                                                 <script>
                                                     var origen_latitud = 9.934612211393949;
                                                     var origen_longitud = -84.08498480136649;
 
-                                                    var map = L.map('map').setView([origen_latitud, origen_longitud], 15);
-
-                                                    L.tileLayer('https://api.maptiler.com/maps/streets/{z}/{x}/{y}.png?key=tctLp8XfyJogfuDP1C2H', {
-                                                        attribution: '<a href="https://www.maptiler.com/copyright/" target="_blank">&copy; MapTiler</a> <a href="https://www.openstreetmap.org/copyright" target="_blank">&copy; OpenStreetMap contributors</a>',
-                                                    }).addTo(map);
-
-                                                    start_icon = L.icon({
-                                                        iconUrl: 'https://www.mapquestapi.com/staticmap/geticon?uri=poi-red_1.png',
-                                                        iconSize: [20, 29],
-                                                        iconAnchor: [10, 29],
-                                                        popupAnchor: [0, -29]
-                                                    });
-
-                                                    parada_icon = L.icon({
-                                                        iconUrl: 'https://www.mapquestapi.com/staticmap/geticon?uri=poi-orange_1.png',
-                                                        iconSize: [20, 29],
-                                                        iconAnchor: [10, 29],
-                                                        popupAnchor: [0, -29]
-                                                    });
-                                                    
-                                                    end_icon = L.icon({
-                                                        iconUrl: 'https://www.mapquestapi.com/staticmap/geticon?uri=poi-blue_1.png',
-                                                        iconSize: [20, 29],
-                                                        iconAnchor: [10, 29],
-                                                        popupAnchor: [0, -29]
-                                                    });
+                                                    map.setView([origen_latitud, origen_longitud], 15);
 													
 													var rutas;
 													var paradas;
@@ -178,7 +154,6 @@
 														
 													paradas = consultaRuta("{{paradas}}");
 													// Adding markers to map
-													console.log("{{ruta}}");
 													rutas.forEach(function(ruta) {
 														L.marker([ruta.fields.origen_latitud, ruta.fields.origen_longitud], {icon: start_icon}).addTo(map).bindPopup(ruta.fields.nombre).openPopup();
 														L.marker([ruta.fields.destino_latitud, ruta.fields.destino_longitud], {icon: end_icon}).addTo(map).bindPopup(ruta.fields.nombre).openPopup();
@@ -199,42 +174,7 @@
 														
 														plotRutaCoordenadas = [];
 													});
-                                                    
-													function createRoute(ruta){
-														var color;
-                                                        var r = Math.floor(Math.random() * 150 + 50)-50;
-                                                        var g = Math.floor(Math.random() * 150 + 50)-50;
-                                                        var b = Math.floor(Math.random() * 150 + 50)-50;
-														r = (r).toString(16);
-														g = (g).toString(16);
-														b = (b).toString(16);
-														colorHex = "#"+r+g+b;														
-														
-														L.Routing.control({
-															  waypoints: ruta,
-															  collapsible: true,
-															  waypointMode: "connected",
-															  addWaypoints: false,
-															  draggableWaypoints: false,
-															  createMarker: function() { return null; },
-															  lineOptions:{
-																styles: [
-																	{color:colorHex}
-																	]
-															  }
-															}).addTo(map);
-														document.getElementById('map').children[2].children[1].style="display:none;";
-													}
 													
-													function consultaRuta(tabla){
-														return JSON.parse((tabla).replace(/&(l|g|quo)t;/g, function(a,b){
-                                                            return {
-                                                                l   : '<',
-                                                                g   : '>',
-                                                                quo : '"'
-                                                            }[b];
-                                                        }));
-													}
                                                 </script>
                                             </div>
                                     </div>
