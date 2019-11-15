@@ -45,7 +45,7 @@
                             </div>
                             <div class="card-body">
                                 {% for obj in routes_stops %}
-                                    <a href="/paradas_modificar/?id={{ obj.id }}"> {{ obj.nombre }} </a><br>
+                                    <a href="/paradas_modificar/?id={{ obj.id }}&idr={{ obj.ruta.id }}"> {{ obj.nombre }} </a><br>
                                 {% endfor %}
                             </div>
                         </div>

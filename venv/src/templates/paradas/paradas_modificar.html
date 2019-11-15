@@ -44,11 +44,58 @@
                                             <div id = "map" style="height: 600px;">
                                                     <div id = "map" style="height: 550px;">
                                                         <script>
+															start_icon = L.icon({
+																iconUrl: 'https://www.mapquestapi.com/staticmap/geticon?uri=poi-red_1.png',
+																iconSize: [20, 29],
+																iconAnchor: [10, 29],
+																popupAnchor: [0, -29]
+															});
+
+															parada_icon = L.icon({
+																iconUrl: 'https://www.mapquestapi.com/staticmap/geticon?uri=poi-orange_1.png',
+																iconSize: [20, 29],
+																iconAnchor: [10, 29],
+																popupAnchor: [0, -29]
+															});
+															
+															end_icon = L.icon({
+																iconUrl: 'https://www.mapquestapi.com/staticmap/geticon?uri=poi-blue_1.png',
+																iconSize: [20, 29],
+																iconAnchor: [10, 29],
+																popupAnchor: [0, -29]
+															});
+														
                                                             var latitud = document.getElementById("latitudID").value;
                                                             var longitud = document.getElementById("longitudID").value;
                                                             
                                                             var map = L.map('map').setView([latitud, longitud], 15);
-                                                            var marker = L.marker([latitud, longitud], {draggable:true, autoPan: true}).addTo(map).bindPopup("Ubicación de empresa").openPopup();
+                                                            var marker = L.marker([latitud, longitud], {draggable:true, autoPan: true}).addTo(map).bindPopup("Ubicación de parada").openPopup();
+															
+															
+															var paradas = consultaRuta("{{paradas}}");
+															var ruta =  consultaRuta(("["+"{{ruta}}"+"]").replace(/&#39;/g,'"'))[0];
+															var index = consultaRuta(("["+"{{id_parada}}"+"]").replace(/&#39;/g,'"'))[0];
+															
+															var markerOrigen = L.marker([ruta.origen_latitud, ruta.origen_longitud], {icon: start_icon, autoPan: true}).addTo(map).bindPopup("Origen").openPopup();
+															var markerDestino = L.marker([ruta.destino_latitud, ruta.destino_longitud], {icon: end_icon, autoPan: true}).addTo(map).bindPopup("Destino").openPopup();
+															var plotRutaCoordenadas = [[ruta.origen_latitud, ruta.origen_longitud],[ruta.destino_latitud, ruta.destino_longitud]];
+															//var plotRutaCoordenadas = [];
+															
+															// Adding markers to map
+															var count=1;
+															paradas.forEach(function(item) {
+																if(item.pk == index.id){
+																	plotRutaCoordenadas.splice(-1,0,[latitud, longitud]);
+																	index = count;
+																}else{
+																	L.marker([item.fields.latitud, item.fields.longitud], {icon: parada_icon}).addTo(map).bindPopup(item.fields.nombre).openPopup();
+																	plotRutaCoordenadas.splice(-1,0,[item.fields.latitud, item.fields.longitud]);
+																}
+																count++;
+															});
+															
+															createRoute(plotRutaCoordenadas);
+															
                         
                                                             L.tileLayer('https://api.maptiler.com/maps/streets/{z}/{x}/{y}.png?key=tctLp8XfyJogfuDP1C2H', {
                                                                 attribution: '<a href="https://www.maptiler.com/copyright/" target="_blank">&copy; MapTiler</a> <a href="https://www.openstreetmap.org/copyright" target="_blank">&copy; OpenStreetMap contributors</a>',
@@ -56,11 +103,49 @@
                     
                                                             function moveMarker(e){
                                                                 marker.setLatLng(e.latlng);
+																currRoute.spliceWaypoints(index,1,[e.latlng.lat, e.latlng.lng]);
                                                                 document.getElementById("latitudID").setAttribute('value', e.latlng.lat);
                                                                 document.getElementById("longitudID").setAttribute('value', e.latlng.lng);
                                                             }
                         
                                                             map.on('click', moveMarker);
+															
+															var currRoute;
+															function createRoute(ruta){
+																var color;
+																var r = Math.floor(Math.random() * 150 + 50)-50;
+																var g = Math.floor(Math.random() * 150 + 50)-50;
+																var b = Math.floor(Math.random() * 150 + 50)-50;
+																r = (r).toString(16);
+																g = (g).toString(16);
+																b = (b).toString(16);
+																colorHex = "#"+r+g+b;														
+																
+																currRoute = L.Routing.control({
+																	  waypoints: ruta,
+																	  collapsible: true,
+																	  waypointMode: "snap",
+																	  addWaypoints: false,
+																	  draggableWaypoints: false,
+																	  createMarker: function() { return null; },
+																	  lineOptions:{
+																		styles: [
+																			{color:colorHex}
+																			]
+																	  }
+																	}).addTo(map);
+																document.getElementById('map').children[2].children[1].style="display:none;";
+															}
+															
+															function consultaRuta(tabla){
+																return JSON.parse((tabla).replace(/&(l|g|quo)t;/g, function(a,b){
+																	return {
+																		l   : '<',
+																		g   : '>',
+																		quo : '"'
+																	}[b];
+																}));
+															}
                         
                                                         </script>
                                             </div>
