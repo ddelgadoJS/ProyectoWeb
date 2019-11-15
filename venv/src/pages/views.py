@@ -275,34 +275,54 @@ def parada_create_view(request, *args, **kwargs):
 
 @login_required
 def parada_modify_view(request, *args, **kwargs):
-    parada_id = request.GET.get('id')
-    parada = Parada.objects.get(id=parada_id)
-    data = {
-        'ruta': parada.ruta,
+	parada_id = request.GET.get('id')
+	parada = Parada.objects.get(id=parada_id)
+	
+	ruta_id = request.GET.get('idr')
+	ruta = Ruta.objects.get(id=ruta_id)
+	paradas = Parada.objects.filter(ruta=ruta_id)
+	
+	ruta = {
+		'origen_latitud': ruta.origen_latitud,
+        'origen_longitud': ruta.origen_longitud,
+        'destino_latitud': ruta.destino_latitud,
+        'destino_longitud': ruta.destino_longitud
+	}
+	
+	id_parada = {
+		'id' : parada.id
+	}
+	
+	data = {
+		'ruta': parada.ruta,
         'nombre': parada.nombre,
         'description': parada.description,
         'horario': parada.horario,
         'latitud': parada.latitud,
         'longitud': parada.longitud
     }
+	
 
-    form = ParadaUpdateForm(initial=data)
-    if request.method == 'POST':
-        if 'update_button' in request.POST:
-            form = ParadaUpdateForm(request.POST, instance=parada)
-            if form.is_valid():
-                parada = form.save()
-                crear_log(request.user, "actualiza", parada=parada)
-                return redirect('/paradas')
-        elif 'delete_button' in request.POST:
-            Parada.objects.get(id=parada_id).delete()
-            return redirect('/paradas')
+	form = ParadaUpdateForm(initial=data)
+	if request.method == 'POST':
+		if 'update_button' in request.POST:
+			form = ParadaUpdateForm(request.POST, instance=parada)
+			if form.is_valid():
+				parada = form.save()
+				crear_log(request.user, "actualiza", parada=parada)
+				return redirect('/paradas')
+		elif 'delete_button' in request.POST:
+			Parada.objects.get(id=parada_id).delete()
+			return redirect('/paradas')
 
-    context = {
-        'form': form
-    }
+	context = {
+		'form': form,
+		'ruta': ruta,
+		'id_parada': id_parada,
+		'paradas': serializers.serialize("json", paradas)
+	}
     
-    return render(request, "paradas/paradas_modificar.html", context)
+	return render(request, "paradas/paradas_modificar.html", context)
 
 @login_required
 def profile_view(request, *args, **kwargs):
@@ -347,13 +367,16 @@ def evaluaciones_view(request, *args, **kwargs):
 
     routes_stops = Parada.objects.filter(ruta=ruta_id)
 
+
     context = {
         "registered_routes": registered_routes_queryset,
         "routes_stops": routes_stops,
         "ruta_id": int(ruta_id),
     }
 
+
     return render(request, "evaluaciones/evaluaciones.html", context)
+
 
 
 #---------------------------------------------------------------------------
