@@ -338,8 +338,22 @@ def profile_view(request, *args, **kwargs):
     
     return render(request, "perfil.html", context)
 
+def evaluaciones_view(request, *args, **kwargs):
+    registered_routes_queryset = Ruta.objects.all()
 
+    ruta_id = request.GET.get('id')
+    # Default company to show routes.
+    if ruta_id is None: ruta_id = registered_routes_queryset[0].id
 
+    routes_stops = Parada.objects.filter(ruta=ruta_id)
+
+    context = {
+        "registered_routes": registered_routes_queryset,
+        "routes_stops": routes_stops,
+        "ruta_id": int(ruta_id),
+    }
+
+    return render(request, "evaluaciones/evaluaciones.html", context)
 
 
 #---------------------------------------------------------------------------

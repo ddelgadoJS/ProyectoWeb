@@ -4,14 +4,15 @@
 {% block content_sidebar %}
 <li class="nav-item" role="presentation"><a class="nav-link" href='/'><i class="fas fa-tachometer-alt"></i><span>Dashboard</span></a></li>
 <li class="nav-item" role="presentation"><a class="nav-link" href='/empresas/'><i class="fas fa-building"></i><span>Empresas</span></a></li>
-<li class="nav-item" role="presentation"><a class="nav-link active" href='/rutas/'><i class="fas fa-route"></i><span>Rutas</span></a></li>
+<li class="nav-item" role="presentation"><a class="nav-link" href='/rutas/'><i class="fas fa-route"></i><span>Rutas</span></a></li>
 <li class="nav-item" role="presentation"><a class="nav-link" href='/paradas/'><i class="fas fa-map-marked-alt"></i><span>Paradas</span></a></li>
-<li class="nav-item" role="presentation"><a class="nav-link" href='/evaluaciones/'><i class="fas fa-star"></i><span>Evaluaciones</span></a></li>
+<li class="nav-item" role="presentation"><a class="nav-link active" href='/evaluaciones/'><i class="fas fa-star"></i><span>Evaluaciones</span></a></li>
 {% endblock %}
 
 {% block content_2 %}
 <div class="container-fluid">
-    <h3 class="text-dark mb-4">Rutas</h3>
+    <h3 class="text-dark mb-4">Evaluación de transporte
+    </h3>
             
             
     <div class="row mb-3">
@@ -20,14 +21,14 @@
                 <div class="col">
                     <div class="card shadow mb-3">
                         <div class="card-header py-3">
-                            <p class="text-primary m-0 font-weight-bold">¿Las rutas de cuál empresa?</p>
+                            <p class="text-primary m-0 font-weight-bold">¿Las paradas de cuál ruta?</p>
                         </div>
                         <div class="card-body">
-                            {% for obj in registered_companies %}
-                                {% if empresa_id == obj.id %}
-                                    <a href="/rutas/?id={{ obj.id }}" class="text-primary"> {{ obj.nombre }} </a><br>
+                            {% for obj in registered_routes %}
+                                {% if ruta_id == obj.id %}
+                                    <a href="/paradas/?id={{ obj.id }}" class="text-primary"> {{ obj.nombre }} </a><br>
                                 {% else %}
-                                    <a href="/rutas/?id={{ obj.id }}" class="text-secondary"> {{ obj.nombre }} </a><br>
+                                    <a href="/paradas/?id={{ obj.id }}" class="text-secondary"> {{ obj.nombre }} </a><br>
                                 {% endif %}
                             {% endfor %}
                         </div>
@@ -41,11 +42,11 @@
                     <div class="col">
                         <div class="card shadow mb-3">
                             <div class="card-header py-3">
-                                <p class="text-primary m-0 font-weight-bold">Rutas registradas</p>
+                                <p class="text-primary m-0 font-weight-bold">Paradas registradas</p>
                             </div>
                             <div class="card-body">
-                                {% for obj in company_routes %}
-                                    <a href="/rutas_modificar/?id={{ obj.id }}"> {{ obj.nombre }} </a><br>
+                                {% for obj in routes_stops %}
+                                    <a href="/paradas_modificar/?id={{ obj.id }}"> {{ obj.nombre }} </a><br>
                                 {% endfor %}
                             </div>
                         </div>
@@ -55,7 +56,7 @@
     </div>
 
     <div class="card shadow mb-4">
-            <a class="btn btn-primary btn-block text-white" href='/rutas_registrar'>Registrar ruta</a>
+            <a class="btn btn-primary btn-block text-white" href='/paradas_registrar'>Registrar parada</a>
     </div>
     
     <div class="card shadow mb-5"></div>
