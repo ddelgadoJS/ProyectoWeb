@@ -32,20 +32,21 @@
                             <div class="d-none d-sm-block topbar-divider"></div>
                             <li class="nav-item dropdown no-arrow" role="presentation">
                                 <div class="nav-item dropdown no-arrow">
+                                    <a class="dropdown-toggle nav-link" data-toggle="dropdown" aria-expanded="false" href="#">
+
                                     {% if request.user.is_authenticated %}
-                                        <span class="d-none d-lg-inline mr-2 text-gray-600 small">Bienvenido! {{ user.get_username }}</span>
+                                        <span class="d-none d-lg-inline mr-2 text-gray-600 small">{{ user.first_name }}</span>
                                         <img class="border rounded-circle img-profile" src='{% static "assets/img/avatars/avatar1.jpeg"%}'>
                                     {% else %}
-                                        <span class="d-none d-lg-inline mr-2 text-gray-600 small">Bienvenido! Guest</span>
-                                        <span class="d-none d-lg-inline mr-2 text-gray-600 small">{{ request.user.get_full_name }}</span>
+                                        <span class="d-none d-lg-inline mr-2 text-gray-600 small">Guest</span>
                                         <img class="border rounded-circle img-profile" src='{% static "assets/img/avatars/avatar1.jpeg"%}'>
-									{% endif %} 
+                                    {% endif %} 
                                     </a>
                                     <div class="dropdown-menu shadow dropdown-menu-right animated--grow-in" role="menu">
                                     <a class="dropdown-item" role="presentation" href="/perfil/"><i class="fas fa-user fa-sm fa-fw mr-2 text-gray-400"></i>&nbsp;Perfil</a>
                                     <a class="dropdown-item" role="presentation" href="#"><i class="fas fa-list fa-sm fa-fw mr-2 text-gray-400"></i>&nbsp;Log de actividad</a>
                                     <div class="dropdown-divider"></div>
-                                    <a class="dropdown-item" role="presentation" href="logout">
+                                    <a class="dropdown-item" role="presentation" href="/logout/">
                                         <i class="fas fa-sign-out-alt fa-sm fa-fw mr-2 text-gray-400"></i>&nbsp;Logout
                                     </a>
                                 </div>
