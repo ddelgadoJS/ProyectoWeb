@@ -13,26 +13,39 @@
 <div class="container-fluid">
     <h3 class="text-dark mb-4">Evaluación de transporte
     </h3>
-
-
+            
+            
     <div class="row mb-3">
         <div class="col-lg-4">
             <div class="row">
                 <div class="col">
                     <div class="card shadow mb-3">
                         <div class="card-header py-3">
-                            <p class="text-primary m-0 font-weight-bold">¿Las paradas de cuál ruta?</p>
+                            <p class="text-primary m-0 font-weight-bold">¿Cuál empresa desea evaluar?</p>
                         </div>
                         <div class="card-body">
-                            {% for obj in registered_routes %}
-                                {% if ruta_id == obj.id %}
-                                    <a href="/paradas/?id={{ obj.id }}" class="text-primary"> {{ obj.nombre }} </a><br>
-                                {% else %}
-                                    <a href="/paradas/?id={{ obj.id }}" class="text-secondary"> {{ obj.nombre }} </a><br>
-                                {% endif %}
+                            {% for obj in registered_companies %} 
+                                <a href="/evaluaciones/?id={{ obj.id }}"> {{ obj.nombre }} </a><br>
                             {% endfor %}
                         </div>
                     </div>
+                    <div class="card shadow mb-4">
+                            <div class="card-header py-3">
+                                <h6 class="text-primary font-weight-bold m-0">Projects</h6>
+                            </div>
+                            <div class="container">
+                            <h2>Bootstrap star rating example by Salehin</h2>
+                                <br/>
+                                <label for="input-1" class="control-label">Give a rating for Skill:</label>
+                                <input id="input-1" name="input-1" class="rating rating-loading" data-min="0" data-max="5" data-step="0.1" value="2">
+                                <br/>
+                                <label for="input-2" class="control-label">Give a rating for Knowledge:</label>
+                                <input id="input-2" name="input-2" class="rating rating-loading" data-min="0" data-max="5" data-step="0.1" value="4">
+                                <br/>
+                                <label for="input-3" class="control-label">Give a rating for PHP:</label>
+                                <input id="input-3" name="input-3" class="rating rating-loading" data-min="0" data-max="5" data-step="0.1" value="5">
+                            </div>
+                        </div>
                 </div>
             </div>
         </div>
@@ -42,11 +55,23 @@
                     <div class="col">
                         <div class="card shadow mb-3">
                             <div class="card-header py-3">
-                                <p class="text-primary m-0 font-weight-bold">Paradas registradas</p>
+                                <p class="text-primary m-0 font-weight-bold">Evaluaciones de los usuarios</p>
                             </div>
                             <div class="card-body">
-                                {% for obj in routes_stops %}
-                                    <a href="/paradas_modificar/?id={{ obj.id }}&idr={{ obj.ruta.id }}"> {{ obj.nombre }} </a><br>
+                                {% if score == 0 %}
+                                    <!-- {% for i in range5 %}
+                                        <img class="img-fluid" src='{% static "assets/img/empty_star.png"%}'>
+                                    {% endfor %} -->
+                                    Sin evaluaciones.
+                                {% endif %}
+                                {% for i in score_range %}
+                                    <img class="img-fluid" src='{% static "assets/img/blue_filled_star.png"%}'>
+                                {% endfor %}
+                                <br>
+                            </div>
+                            <div class="card-body">
+                                {% for obj in evaluaciones %}
+                                    <p><b>{{ obj.usuario }}</b> calificó con <b>{{ obj.estrellas }}</b> de 5 estrellas - <i>{{ obj.comentario }}</i><br></p>
                                 {% endfor %}
                             </div>
                         </div>
@@ -56,9 +81,9 @@
     </div>
 
     <div class="card shadow mb-4">
-            <a class="btn btn-primary btn-block text-white" href='/paradas_registrar'>Registrar parada</a>
+            <a class="btn btn-primary btn-block text-white" href='/paradas_registrar'>Calificar empresa</a>
     </div>
-
+    
     <div class="card shadow mb-5"></div>
 </div>
-{% endblock %} 
+{% endblock %}

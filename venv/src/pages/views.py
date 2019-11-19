@@ -7,12 +7,15 @@ from django.views.generic.edit import CreateView
 from django.views.generic.list import ListView
 from django.views.generic.detail import DetailView
 
-from .models import Empresa, Ruta, Parada
+from .models import Empresa, Ruta, Parada, Evaluacion
 from .forms import *
 from .lib import crear_log
 
 from django.contrib.auth.models import User
 from django.views.generic.edit import UpdateView
+
+from statistics import mean
+from math import ceil
 
 def aux_get_paradas_unicas(paradas):
     paradas_unicas = []
@@ -359,24 +362,26 @@ def profile_view(request, *args, **kwargs):
     return render(request, "perfil.html", context)
 
 def evaluaciones_view(request, *args, **kwargs):
-    registered_routes_queryset = Ruta.objects.all()
+    registered_companies_queryset = Empresa.objects.all()
 
-    ruta_id = request.GET.get('id')
-    # Default company to show routes.
-    if ruta_id is None: ruta_id = registered_routes_queryset[0].id
+    empresa_id = request.GET.get('id')
+    # Default company to show evaluations.
+    if empresa_id is None: empresa_id = registered_companies_queryset[0].id
 
-    routes_stops = Parada.objects.filter(ruta=ruta_id)
-
+    evaluaciones = Evaluacion.objects.filter(empresa=empresa_id)
+    estrellas = list(evaluaciones.values_list('estrellas', flat=True))
+    
+    if len(estrellas) == 0: estrellas = [0]
 
     context = {
-        "registered_routes": registered_routes_queryset,
-        "routes_stops": routes_stops,
-        "ruta_id": int(ruta_id),
+        "registered_companies": registered_companies_queryset,
+        "score": ceil(mean(estrellas)),
+        "score_range": range(ceil(mean(estrellas))),
+        "evaluaciones": evaluaciones,
+        "range5": range(5),
     }
 
-
     return render(request, "evaluaciones/evaluaciones.html", context)
-
 
 
 #---------------------------------------------------------------------------

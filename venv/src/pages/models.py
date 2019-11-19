@@ -48,7 +48,7 @@ class Ruta(models.Model):
     destino_longitud = models.FloatField()
 
     def __str__(self):
-        return f'c/{self.nombre}'
+        return f'{self.nombre}'
 
 
 class Parada(models.Model):
@@ -67,7 +67,7 @@ class Parada(models.Model):
     longitud = models.FloatField()
 
     def __str__(self):
-        return f'c/{self.nombre}'
+        return f'{self.nombre}'
 
 
 class Log(models.Model):
@@ -92,3 +92,18 @@ class Log(models.Model):
 
         return f'{self.operacion} Fecha: {self.fecha_creacion}'
 
+class Evaluacion(models.Model):
+    """
+    Evaluacion de una Empresa
+    """
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    empresa = models.ForeignKey(Empresa, on_delete=models.CASCADE)
+
+    usuario = models.ForeignKey(User, null=True, on_delete=models.SET_NULL)
+    estrellas = models.IntegerField()
+    comentario = models.CharField(max_length=10000)
+
+    def __str__(self):
+        return f'{self.empresa}' + ' - ' + f'{self.estrellas}'
