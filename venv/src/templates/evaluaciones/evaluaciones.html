@@ -29,23 +29,6 @@
                             {% endfor %}
                         </div>
                     </div>
-                    <div class="card shadow mb-4">
-                            <div class="card-header py-3">
-                                <h6 class="text-primary font-weight-bold m-0">Projects</h6>
-                            </div>
-                            <div class="container">
-                            <h2>Bootstrap star rating example by Salehin</h2>
-                                <br/>
-                                <label for="input-1" class="control-label">Give a rating for Skill:</label>
-                                <input id="input-1" name="input-1" class="rating rating-loading" data-min="0" data-max="5" data-step="0.1" value="2">
-                                <br/>
-                                <label for="input-2" class="control-label">Give a rating for Knowledge:</label>
-                                <input id="input-2" name="input-2" class="rating rating-loading" data-min="0" data-max="5" data-step="0.1" value="4">
-                                <br/>
-                                <label for="input-3" class="control-label">Give a rating for PHP:</label>
-                                <input id="input-3" name="input-3" class="rating rating-loading" data-min="0" data-max="5" data-step="0.1" value="5">
-                            </div>
-                        </div>
                 </div>
             </div>
         </div>
@@ -74,14 +57,22 @@
                                     <p><b>{{ obj.usuario }}</b> calificó con <b>{{ obj.estrellas }}</b> de 5 estrellas - <i>{{ obj.comentario }}</i><br></p>
                                 {% endfor %}
                             </div>
+                            <div class="btn-group">
+                                <button type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                    Evaluar
+                                </button>
+                                <div class="dropdown-menu">
+                                    <a class="dropdown-item" href="/evaluaciones/?stars=5&id={{empresa_id}}">5 estrellas</a>
+                                    <a class="dropdown-item" href="/evaluaciones/?stars=4&id={{empresa_id}}">4 estrellas</a>
+                                    <a class="dropdown-item" href="/evaluaciones/?stars=3&id={{empresa_id}}">3 estrellas</a>
+                                    <a class="dropdown-item" href="/evaluaciones/?stars=2&id={{empresa_id}}">2 estrellas</a>
+                                    <a class="dropdown-item" href="/evaluaciones/?stars=1&id={{empresa_id}}">1 estrella</a>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
-    </div>
-
-    <div class="card shadow mb-4">
-            <a class="btn btn-primary btn-block text-white" href='/paradas_registrar'>Calificar empresa</a>
     </div>
     
     <div class="card shadow mb-5"></div>

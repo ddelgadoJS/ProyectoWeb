@@ -365,8 +365,15 @@ def evaluaciones_view(request, *args, **kwargs):
     registered_companies_queryset = Empresa.objects.all()
 
     empresa_id = request.GET.get('id')
+    stars = request.GET.get('stars')
     # Default company to show evaluations.
     if empresa_id is None: empresa_id = registered_companies_queryset[0].id
+
+    if stars is not None:
+        empresa = Empresa.objects.get(id=empresa_id)
+        evaluacion = Evaluacion(empresa=empresa, usuario=request.user, estrellas=stars, comentario="")
+        evaluacion.save()
+        return redirect('/evaluaciones/?id=' + empresa_id)
 
     evaluaciones = Evaluacion.objects.filter(empresa=empresa_id)
     estrellas = list(evaluaciones.values_list('estrellas', flat=True))
@@ -374,6 +381,7 @@ def evaluaciones_view(request, *args, **kwargs):
     if len(estrellas) == 0: estrellas = [0]
 
     context = {
+        "empresa_id": empresa_id,
         "registered_companies": registered_companies_queryset,
         "score": ceil(mean(estrellas)),
         "score_range": range(ceil(mean(estrellas))),
