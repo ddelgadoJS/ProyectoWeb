@@ -2,9 +2,9 @@
 {% load static %}
 
 {% block content_1 %}
-<body id="page-top">
+<body id="page-top sidebar-toggled">
     <div id="wrapper">
-        <nav class="navbar navbar-dark align-items-start sidebar sidebar-dark accordion bg-gradient-primary p-0">
+        <nav class="navbar navbar-dark align-items-start sidebar sidebar-dark accordion bg-gradient-primary p-0 toggled">
             <div class="container-fluid d-flex flex-column p-0">
                 <a class="navbar-brand d-flex justify-content-center align-items-center sidebar-brand m-0" href="#">
                     <div class="sidebar-brand-icon rotate-n-15"><i class="fas fa-bus"></i></div>
@@ -14,10 +14,11 @@
                 <ul class="nav navbar-nav text-light" id="accordionSidebar">
                     {% block content_sidebar %}
 					<li class="nav-item" role="presentation"><a class="nav-link active" href='/' id="dashboard_id"><i class="fas fa-tachometer-alt"></i><span>Dashboard</span></a></li>
-                    <li class="nav-item" role="presentation"><a class="nav-link" href='/empresas/'><i class="fas fa-building"></i><span>Empresas</span></a></li>
-                    <li class="nav-item" role="presentation"><a class="nav-link" href='/rutas/'><i class="fas fa-route"></i><span>Rutas</span></a></li>
-                    <li class="nav-item" role="presentation"><a class="nav-link" href='/paradas/'><i class="fas fa-map-marked-alt"></i><span>Paradas</span></a></li>
-					<li class="nav-item" role="presentation"><a class="nav-link" href='/evaluaciones/'><i class="fas fa-star"></i><span>Evaluaciones</span></a></li>
+						<li class="nav-item" role="presentation"><a class="nav-link" href='/guide/'><i class="fas fa-route"></i><span>Guía</span></a></li>
+						<li class="nav-item" role="presentation"><a class="nav-link" href='/empresas/'><i class="fas fa-building"></i><span>Empresas</span></a></li>
+						<li class="nav-item" role="presentation"><a class="nav-link" href='/rutas/'><i class="fas fa-bus"></i><span>Rutas de buses</span></a></li>
+						<li class="nav-item" role="presentation"><a class="nav-link" href='/paradas/'><i class="fas fa-map-marked-alt"></i><span>Paradas</span></a></li>
+						<li class="nav-item" role="presentation"><a class="nav-link" href='/evaluaciones/'><i class="fas fa-star"></i><span>Evaluaciones</span></a></li>
                     {% endblock %}
                 </ul>
                 <div class="text-center d-none d-md-inline"><button class="btn rounded-circle border-0" id="sidebarToggle" type="button"></button></div>
@@ -65,51 +66,69 @@
                         <div class="card mb-3">
                             <div class="card-body text-center shadow">
                                 <form action="/" method="get">
-                                    Empresa
-                                    <select class="form-control" name="empresa" required="" id="id_empresa">
-                                        <option value="">---------</option>
-                                        {% for obj in empresas %} 
-                                            {% if obj.id == empresa_id %}
-                                                <option value="{{ obj.id }}" selected="selected"> {{ obj.nombre }}</option>
-                                            {% else %}
-                                                <option value="{{ obj.id }}"> {{ obj.nombre }}</option>
-                                            {% endif %}
-                                        {% endfor %}
-                                    </select>
+                                    <div class="form-group row">
+										Empresa
+										<select class="form-control" name="empresa" id="listEmpresas" onchange="filterList()">
+											<option  value="">---------</option>
+											<option  value="0">Todas</option>
+											{% for obj in empresas %} 
+												{% if obj.id == empresa_id %}
+													<option value="{{ obj.id }}" selected="selected"> {{ obj.nombre }}</option>
+												{% else %}
+													<option value="{{ obj.id }}"> {{ obj.nombre }}</option>
+												{% endif %}
+											{% endfor %}
+										</select>
 
-                                    <button class="btn btn-primary btn-block text-white" type="submit" value="Submit">Buscar</button>
-                                </form>
+										<!--<button class="btn btn-primary btn-block text-white" type="submit" value="Submit">Buscar</button>
+									</form>
 
-                                <form action="/" method="get">
-                                    Ruta
-                                    <select class="form-control" name="ruta" required="" id="id_ruta">
-                                        <option value="">---------</option>
-                                        {% for obj in rutas %} 
-                                            <option value="{{ obj.id }}"> {{ obj.nombre }}</option>
-                                        {% endfor %}
-                                    </select>
-                                    <button class="btn btn-primary btn-block text-white" type="submit" value="Submit">Buscar</button>
-                                </form>
+									<form action="/" method="get">-->
+										Ruta
+										<select class="form-control" name="ruta" id="listRutas">
+											<option  value="">---------</option>
+											{% for obj in rutas %} 
+												{% if obj.id == ruta_id %}
+													<option value="{{ obj.id }}" data-idempresa="{{ obj.empresa.id }}" selected="selected"> {{ obj.nombre }}</option>
+												{% else %}
+													<option value="{{ obj.id }}"data-idempresa="{{ obj.empresa.id }}"> {{ obj.nombre }}</option>
+												{% endif %}
+											{% endfor %}
+										</select>
+									</div>
+										<!--<button class="btn btn-primary btn-block text-white" type="submit" value="Submit">Buscar</button>
+									</form>
+									
+									<form action="/" method="get">-->
+									<br>
+									<div class="form-group row">
+										Destino en Común
+										<select class="form-control" name="destino" id="id_destino">
+											<option value="">---------</option>
+											{% for obj in destinos_all %}
+												{% if obj.nombre_destino == nombre_destino %}
+													<option value="{{ obj.nombre_destino }}" selected="selected"> {{ obj.nombre_destino }}</option>
+												{% else %}
+													<option value="{{ obj.nombre_destino }}"> {{ obj.nombre_destino }}</option>
+												{% endif %}
+											{% endfor %}
+										</select>
+										<!--<button class="btn btn-primary btn-block text-white" type="submit" value="Submit">Buscar</button>
+									</form>
 
-                                <form action="/" method="get">
-                                    Destino en Común
-                                    <select class="form-control" name="destino" required="" id="id_destino">
-                                        <option value="">---------</option>
-                                        {% for obj in destinos_all %}
-                                            <option value="{{ obj.nombre_destino }}"> {{ obj.nombre_destino }}</option>
-                                        {% endfor %}
-                                    </select>
-                                    <button class="btn btn-primary btn-block text-white" type="submit" value="Submit">Buscar</button>
-                                </form>
-
-                                <form action="/" method="get">
-                                    Parada en Común
-                                    <select class="form-control" name="parada" required="" id="id_parada">
-                                        <option value="">---------</option>
-                                        {% for obj in paradas_all %}
-                                            <option value="{{ obj.nombre }}"> {{ obj.nombre }}</option>
-                                        {% endfor %}
-                                    </select>
+									<form action="/" method="get">-->
+										Parada en Común
+										<select class="form-control" name="parada" id="id_parada">
+											<option value="">---------</option>
+											{% for obj in paradas_all %}
+												{% if obj.id == parada_id %}
+													<option value="{{ obj.nombre }}" selected="seletced"> {{ obj.nombre }}</option>
+												{% else %}
+													<option value="{{ obj.nombre }}"> {{ obj.nombre }}</option>
+												{% endif %}
+											{% endfor %}
+										</select>
+									</div>
                                     <button class="btn btn-primary btn-block text-white" type="submit" value="Submit">Buscar</button>
                                 </form>
 
@@ -144,16 +163,11 @@
 													var paradas;
 													var plotRutaCoordenadas = [];
 													
-                                                    if ("{{consulta}}" == 1)
-														rutas = consultaRuta("{{rutas_empresa}}");
-													else if("{{consulta}}" == 2)
-                                                        rutas = consultaRuta("{{ruta}}");
-													else if ("{{consulta}}" == 3)
-                                                        rutas = consultaRuta("{{rutas_destino}}");
-													else if ("{{consulta}}" == 4)
-                                                        rutas = consultaRuta("{{rutas_parada}}");
-														
-													paradas = consultaRuta("{{paradas}}");
+                                                    if ("{{consulta}}" == 1){
+														rutas = consultaRuta("{{rutas_query}}");
+														paradas = consultaRuta("{{paradas}}");
+													}
+													
 													// Adding markers to map
 													rutas.forEach(function(ruta) {
 														L.marker([ruta.fields.origen_latitud, ruta.fields.origen_longitud], {icon: start_icon}).addTo(map).bindPopup(ruta.fields.nombre).openPopup();
@@ -162,7 +176,6 @@
 														plotRutaCoordenadas.push([ruta.fields.destino_latitud, ruta.fields.destino_longitud]);
 														
 														var costo = ruta.fields.costo;
-														//var numero = ruta.fields.costo;
 														// For bus stops
 														paradas.forEach(function(parada) {
 															if (parada.fields.ruta ==  ruta.pk) {
@@ -175,6 +188,22 @@
 														
 														plotRutaCoordenadas = [];
 													});
+													
+													function filterList(){
+														var empresa = document.getElementById("listEmpresas");
+														empresa = empresa.children[empresa.selectedIndex].value;
+														var rutasL = document.getElementById("listRutas");
+														var rutas = rutasL.children;
+														for(i=0; i<rutas.length; i++){
+															var item = rutas[i];
+															item.setAttribute("style","display:none;")
+															if(item.getAttribute("data-idempresa") == empresa || empresa == "")
+																item.setAttribute("style","display:block;")
+														}
+														rutasL.value="";
+														
+														
+													}
 													
                                                 </script>
                                             </div>

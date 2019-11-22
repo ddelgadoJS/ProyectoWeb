@@ -43,45 +43,48 @@ def home_view(request, *args, **kwargs):
     """
     if request.method == 'GET':
         consulta = 0
-        rutas_empresa = []
-        rutas_parada = []
-        rutas_destino = []
         empresa_id = 0
-        ruta = ''
-        if request.GET.get('empresa') is not None:
+        ruta_id = 0
+        rutas = ''
+        paradas = ''
+		
+        empresa = request.GET.get('empresa') is not '' and request.GET.get('empresa') is not None
+        ruta = request.GET.get('ruta') is not '' and request.GET.get('ruta') is not None
+        destino = request.GET.get('destino') is not '' and request.GET.get('destino') is not None
+        parada = request.GET.get('parada') is not '' and request.GET.get('parada') is not None
+		
+        if(any([empresa,ruta,parada,destino])):
+            rutas = Ruta.objects.all()
+            paradas = Parada.objects.all();
             consulta = 1
-            rutas_empresa = Ruta.objects.filter(empresa=request.GET.get('empresa'))
-
-        elif request.GET.get('ruta') is not None:
-            consulta = 2
-            ruta = serializers.serialize("json", Ruta.objects.filter(id=request.GET.get('ruta')))
-
-        elif request.GET.get('destino') is not None:
-            consulta = 3
-            for ruta in Ruta.objects.filter(nombre_destino=request.GET.get('destino')):
-                rutas_destino.append(Ruta.objects.get(id=ruta.id))
-
-            rutas_destino = serializers.serialize("json", rutas_destino)
-
-        elif request.GET.get('parada') is not None:
-            consulta = 4
-            for parada in Parada.objects.filter(nombre=request.GET.get('parada')):
-                rutas_parada.append(Ruta.objects.get(id=parada.ruta.id))
-
-            rutas_parada = serializers.serialize("json", rutas_parada)
-        
+        if(empresa):
+            if(request.GET.get('empresa')!="0"):
+                rutas = rutas.filter(empresa=request.GET.get('empresa'))
+                empresa_id = request.GET.get('empresa')
+        if(ruta):
+            rutas = rutas.filter(id=request.GET.get('ruta'))
+            ruta_id = request.GET.get('ruta')
+        if(destino):
+            rutas = rutas.filter(nombre_destino=request.GET.get('destino'))
+        if(parada):
+            parada = Parada.objects.filter(nombre=request.GET.get('parada'))
+            rutas_temp = []
+            for p in parada:
+                rutas_temp.append(Ruta.objects.get(id=p.ruta.id))
+            rutas = rutas_temp
+        if(consulta!=0):
+            rutas = serializers.serialize("json",rutas)
+		    
         context = {
             "consulta": consulta,
             "empresas": Empresa.objects.all(),
             "rutas": Ruta.objects.all(),
-            "rutas_empresa": serializers.serialize("json", rutas_empresa),
+			"rutas_query": rutas,
             "paradas_all": aux_get_paradas_unicas(Parada.objects.all()),
             "paradas": serializers.serialize("json", Parada.objects.all()),
             "destinos_all": aux_get_destinos_unicos(Ruta.objects.all()),
             "empresa_id": int(empresa_id),
-            "ruta": ruta,
-            "rutas_parada": rutas_parada,
-            "rutas_destino": rutas_destino,
+            "ruta_id": int(ruta_id)
         }
 
     return render(request, "home.html", context)
@@ -362,6 +365,25 @@ def profile_view(request, *args, **kwargs):
     return render(request, "perfil.html", context)
 
 def evaluaciones_view(request, *args, **kwargs):
+    registered_routes_queryset = Ruta.objects.all()
+
+    ruta_id = request.GET.get('id')
+    # Default company to show routes.
+    if ruta_id is None: ruta_id = registered_routes_queryset[0].id
+
+    routes_stops = Parada.objects.filter(ruta=ruta_id)
+
+
+    context = {
+        "registered_routes": registered_routes_queryset,
+        "routes_stops": routes_stops,
+        "ruta_id": int(ruta_id),
+    }
+
+
+    return render(request, "evaluaciones/evaluaciones.html", context)
+
+def evaluaciones_view(request, *args, **kwargs):
     registered_companies_queryset = Empresa.objects.all()
 
     empresa_id = request.GET.get('id')
@@ -390,6 +412,21 @@ def evaluaciones_view(request, *args, **kwargs):
     }
 
     return render(request, "evaluaciones/evaluaciones.html", context)
+
+#____________________________________________________________
+#Guia
+def guide_view(request, *args, **kwargs):
+    """
+    Pagina de filtros
+    """
+    context = {
+        "empresas": serializers.serialize("json", Empresa.objects.all()),
+        "rutas": serializers.serialize("json", Ruta.objects.all()),
+        "paradas": serializers.serialize("json", Parada.objects.all())
+    }
+
+    return render(request, "guide/guide.html", context)
+
 
 
 #---------------------------------------------------------------------------

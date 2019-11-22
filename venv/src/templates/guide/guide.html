@@ -1,0 +1,239 @@
+{% extends 'home.html' %}
+{% load static %}
+
+{% block content_2 %}
+
+            <div class="container-fluid">
+                <h3 class="text-dark mb-4">Guía</h3>
+                <div class="row mb-3">
+					<div class="col-lg-4">
+						<div class="card shadow mb-4">
+							<div class="card-header py-3">
+								<h6 class="text-primary font-weight-bold m-0">Guía</h6>
+							</div>
+							<div class="card-body">
+								<div class="radio">
+									<label><input id="origen_rb_id" type="radio" name="optradio" checked>Origen</label>
+									<div class="form-group">
+										<input class="form-control form-control-user" placeholder="Origen (latitud)" id="origen_lat_id"></input>
+										<input class="form-control form-control-user" placeholder="Origen (longitud)" id="origen_lon_id"></input>
+									</div>
+									<label><input id="destino_rb_id" type="radio" name="optradio">Destino</label>
+									<div class="form-group">
+										<input class="form-control form-control-user" placeholder="Destino (latitud)" id="destino_lat_id"></input>
+										<input class="form-control form-control-user" placeholder="Destino (longitud)" id="destino_lon_id"></input>
+									</div>
+								</div>
+								<div class="form-group">
+									<button class="form-group btn btn-primary btn-block text-white btn-user" type="" onclick="a_star()">Buscar</button>
+								</div>
+								<hr>
+							</div>
+						</div>
+					</div>
+                    <div class="col-lg-8">
+                        <div class="row">
+                            <div class="col">
+                                <div class="card shadow mb-3">
+                                    <div class="card-header py-3">
+                                        <p class="text-primary m-0 font-weight-bold">Mapa</p>
+                                    </div>
+                                    <div class="card-body">
+                                            <div id = "map" style="height: 520px;">
+												<script src="{% static 'mapping.js' %}"></script>
+                                                <script>
+                                                    var origen_latitud = 9.934612211393949;
+                                                    var origen_longitud = -84.08498480136649;
+													var m100 = 0.0008393274049279901;
+
+                                                    //map.setView([origen_latitud, origen_longitud], 15);
+													
+													
+													var empresas = consultaRuta("{{empresas}}");
+													var rutas = consultaRuta("{{rutas}}");
+													var paradas = consultaRuta("{{paradas}}");
+													var plotRutaCoordenadas = [];
+													
+													var rutasConParadas = [];
+													rutas.forEach(function(ruta) {
+														// For bus stops
+														var stops = [];
+														var start = {
+															fields: {
+																latitud: ruta.fields.origen_latitud,
+																longitud: ruta.fields.origen_longitud,
+																nombre: ruta.fields.nombre,
+																ruta: ruta.pk
+															}
+														}
+														var end = {
+															fields:{
+																latitud: ruta.fields.destino_latitud,
+																longitud: ruta.fields.destino_longitud,
+																nombre: ruta.fields.nombre,
+																ruta: ruta.pk
+															}
+														}
+														
+														stops.push(start,end);
+														paradas.push(start,end);
+														
+														paradas.forEach(function(parada) {
+															if (parada.fields.ruta ==  ruta.pk) {
+																stops.push(parada);
+															}
+														});
+														rutasConParadas.push(stops);
+													});
+													console.log(rutasConParadas);
+													
+													// Adding markers to map
+													function a_star(){
+														console.log(getCloseStops([document.getElementById("origen_lat_id").value,document.getElementById("origen_lon_id").value],m100*3));
+														
+														var route = [];
+														route.push([[document.getElementById("origen_lat_id").value,document.getElementById("origen_lon_id").value]]);
+														route.push([[document.getElementById("destino_lat_id").value,document.getElementById("destino_lon_id").value]]);
+														
+														var startStops = getCloseStops([document.getElementById("origen_lat_id").value,document.getElementById("origen_lon_id").value],m100*3);
+														console.log(startStops);
+														
+														for(stop in startStops){
+															var distanceToEnd = dist([stop.fields.latitud,stop.fields.longitud],[document.getElementById("origen_lat_id").value,document.getElementById("origen_lon_id").value]);
+															if(distanceToEnd < m100*3){
+																route.splice(-1,0,[[stop.fields.latitud,stop.fields.longitud]]);
+															}else{
+																var rutaT = followRoute(stop);
+																if(rutaT[0] < m100*3){
+																	console.log(rutaT);
+																	route.splice(-1,0,rutaT);
+																}else{
+																	return;
+																}
+															}
+														}
+														
+														for(i=route.length-1; i>=1; i--){
+															route.splice(i,0,[route[i][0],route[i-1][-1]]);
+															
+														}
+														
+														console.log(route);
+														for(i=0; i<route.length; i++){
+															if(i%2!=0){
+																createRouteMarkers(route[i],null);
+															}else{
+																createRouteMarkers(route[i],"#555555");
+															}
+														}
+														
+														
+														
+													}
+													
+													function followRoute(stop){
+														var distanceFromNow = dist([stop.fields.latitud,stop.fields.longitud],[document.getElementById("origen_lat_id").value,document.getElementById("origen_lon_id").value]);
+														var distanceTraveled = 0;
+														
+														for(r in rutasConParadas){
+															if(r[0].fields.ruta == stop.fields.ruta){
+																var cont = false;
+																var stops = [[]];
+																for(s in r[0]){
+																	if(!cont){
+																		if(stop == s)
+																			cont = true;
+																	}else{
+																		var temp = dist([s.fields.latitud,s.fields.longitud],[document.getElementById("origen_lat_id").value,document.getElementById("origen_lon_id").value]);
+																		if(temp < distanceFromNow){
+																			stops[0].push(s);
+																			distanceFromNow = temp;
+																			distanceTraveled += dist([stop.fields.latitud,stop.fields.longitud],[s.fields.latitud,s.fields.longitud]);
+																		}else{
+																			break;
+																		}
+																		//else{
+																		//	return[distanceFromNow,distanceTraveled,stops];
+																		//}
+																	}
+																}
+																
+																if(distanceFromNow < m100*3){
+																	return[distanceFromNow,distanceTraveled,stops];
+																}
+																
+																cont = false;
+																for(s in r[0]){
+																	if(!cont){
+																		if(stop == s)
+																			cont = true;
+																	}else{
+																		var closeStops = getCloseStops([s.fields.latitud,s.fields.longitud],m100*3);
+																		stops[0].push(s);
+																		if(closeStops.length > 0){
+																			closeStops.forEach(function(stop1){
+																				var routed = followRoute(stop1);
+																				if(routed[0] < m100*3){
+																					stops.push(routed[2]);
+																					distanceTraveled += routed[1];
+																					return [distanceFromNow,distanceTraveled,stops];
+																				}
+																				return [999,0,[[]]];
+																			});
+																		}
+																	}
+																}
+																return [distanceFromNow,distanceTraveled,stops];
+															}
+														}
+													}
+													
+													function getCloseStops(point, radius){
+														var stops = [];
+														paradas.forEach(function(parada) {
+															var distance = dist(point,[parada.fields.latitud,parada.fields.longitud,]);
+															if(distance > 0 && distance < radius){
+																stops.push(parada);
+															}
+														});
+														return stops;
+													}
+													
+													map.setView([9.932136, -84.084538], 15);
+                                                    var markerOrigen = L.marker([9.932136, -84.084538], {draggable:false, autoPan: true, icon: start_icon}).addTo(map).bindPopup("Origen").openPopup();
+                                                    var markerDestino = L.marker([9.932136, -84.084538], {draggable:false, autoPan: true, icon: end_icon}).addTo(map).bindPopup("Destino").openPopup();
+            
+                                                    function moveMarker(e){
+                                                        if (document.getElementById('origen_rb_id').checked) {
+                                                            document.getElementById("origen_lat_id").setAttribute('value', e.latlng.lat);
+                                                            document.getElementById("origen_lon_id").setAttribute('value', e.latlng.lng);
+                                                            markerOrigen.setLatLng(e.latlng);
+															//currRoute.spliceWaypoints(0,1,[e.latlng.lat,e.latlng.lng]);
+                                                        } else if (document.getElementById('destino_rb_id').checked) {
+                                                            document.getElementById("destino_lat_id").setAttribute('value', e.latlng.lat);
+                                                            document.getElementById("destino_lon_id").setAttribute('value', e.latlng.lng);
+                                                            markerDestino.setLatLng(e.latlng);
+															//currRoute.spliceWaypoints(-1,1,[e.latlng.lat,e.latlng.lng]);
+                                                        }
+                                                    }
+													
+													function dist(point1, point2){
+														return Math.sqrt(Math.pow(point2[1] - point1[1],2) + Math.pow(point2[0] - point1[0],2));
+													}
+													
+													//createRoute([[9.932136, -84.084538],[9.932136, -84.084548]]);
+                
+                                                    map.on('click', moveMarker);
+													
+                                                </script>
+                                            </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="card shadow mb-5"></div>
+            </div>
+        </div>
+        {% endblock %}
