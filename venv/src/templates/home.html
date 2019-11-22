@@ -197,7 +197,7 @@
 														for(i=0; i<rutas.length; i++){
 															var item = rutas[i];
 															item.setAttribute("style","display:none;")
-															if(item.getAttribute("data-idempresa") == empresa || empresa == "")
+															if(item.getAttribute("data-idempresa") == empresa || empresa == "0" || empresa == "")
 																item.setAttribute("style","display:block;")
 														}
 														rutasL.value="";
