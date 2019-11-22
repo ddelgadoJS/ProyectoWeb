@@ -178,7 +178,7 @@
 																					distanceTraveled += routed[1];
 																					return [distanceFromNow,distanceTraveled,stops];
 																				}
-																				return [999,0,[[]]];
+																				return [m100,0,[[]]];
 																			});
 																		}
 																	}
@@ -186,6 +186,7 @@
 																return [distanceFromNow,distanceTraveled,stops];
 															}
 														}
+														return [m100,0,[[]]];
 													}
 													
 													function getCloseStops(point, radius){
